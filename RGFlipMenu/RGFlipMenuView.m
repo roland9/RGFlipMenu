@@ -129,26 +129,48 @@
             
             [self toggleStatus];
             
-            [UIView animateWithDuration:5.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+            BOOL isIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+            
+            [UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
                 [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeRotation(M_PI_2, 0., 1., 0.))];
 
                 if (!self.isFrontsideShown) {
-                    [self setCenter:CGPointMake(self.center.x - CGRectGetWidth(self.frame), self.center.y)];
+                    if (!isIPad)
+                        [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeScale(0.9f, 0.9f, 1.f))];
+                    
+                    if (isLandscape)
+                        [self setCenter:CGPointMake(self.center.x - CGRectGetWidth(self.frame), self.center.y)];
+                    else
+                        [self setCenter:CGPointMake(self.center.x, self.center.y - CGRectGetHeight(self.frame))];
                     
                     // fan out submenus
                     NSUInteger subMenuIndex = 0;
                     for (RGFlipMenuView *subMenuView in self.backsideMenuView.subviews) {
-                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        if (isLandscape)
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        else
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x, subMenuView.center.y + subMenuIndex*CGRectGetHeight(self.frame))];
+                        
                         subMenuIndex++;
                     }
                     
                 } else {
-                    [self setCenter:CGPointMake(self.center.x + CGRectGetWidth(self.frame), self.center.y)];
+                    if (!isIPad)
+                        [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeScale(1.f, 1.f, 1.f))];
+                    
+                    if (isLandscape)
+                        [self setCenter:CGPointMake(self.center.x + CGRectGetWidth(self.frame), self.center.y)];
+                    else
+                        [self setCenter:CGPointMake(self.center.x, self.center.y + CGRectGetHeight(self.frame))];
 
                     // fan back (is that a phrase?) submenus
                     NSUInteger subMenuIndex = 0;
                     for (RGFlipMenuView *subMenuView in self.backsideMenuView.subviews) {
-                        [subMenuView setCenter:CGPointMake(subMenuView.center.x - subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        if (isLandscape)
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x - subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        else
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x, subMenuView.center.y - subMenuIndex*CGRectGetHeight(self.frame))];
                         subMenuIndex++;
                     }
                     
