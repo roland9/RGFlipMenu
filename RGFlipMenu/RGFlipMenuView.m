@@ -35,7 +35,7 @@
     NSAssert(menuText, @"menuText is mandatory");
     NSAssert(didSelectMenu, @"didSelectMenu block is mandatory");
     
-    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithSize:CGSizeMake(80, 80) text:menuText block:didSelectMenu backsideMenus:NULL isSubMenu:YES];
+    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithSize:CGSizeMake(180, 180) text:menuText block:didSelectMenu backsideMenus:NULL isSubMenu:YES];
     return menu;
 }
 
@@ -121,16 +121,43 @@
         
         // rotate menu back & forth
         [UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
+            
             // add the rotation transform the the EXISTING transform, thereby rotating endlessly (BUT rounding error?!?)
             [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeRotation(M_PI_2, 0., 1., 0.))];
+            
         } completion:^(BOOL finished) {
+            
             [self toggleStatus];
             
-            [UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            [UIView animateWithDuration:5.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
                 [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeRotation(M_PI_2, 0., 1., 0.))];
+
+                if (!self.isFrontsideShown) {
+                    [self setCenter:CGPointMake(self.center.x - CGRectGetWidth(self.frame), self.center.y)];
+                    
+                    // fan out submenus
+                    NSUInteger subMenuIndex = 0;
+                    for (RGFlipMenuView *subMenuView in self.backsideMenuView.subviews) {
+                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        subMenuIndex++;
+                    }
+                    
+                } else {
+                    [self setCenter:CGPointMake(self.center.x + CGRectGetWidth(self.frame), self.center.y)];
+
+                    // fan back (is that a phrase?) submenus
+                    NSUInteger subMenuIndex = 0;
+                    for (RGFlipMenuView *subMenuView in self.backsideMenuView.subviews) {
+                        [subMenuView setCenter:CGPointMake(subMenuView.center.x - subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        subMenuIndex++;
+                    }
+                    
+                }
+
             } completion:^(BOOL finished) {
                 self.isFrontsideShown ? self.didSelectMenuBlock() : nil; // todoRG pending - call block of background menu
             }];
+            
         }];
     }
 }
@@ -146,31 +173,33 @@
 - (CGRect)subMenuFrameWithIndex:(NSUInteger)index {
     CGFloat width = 90;
     CGFloat height = width;
-    CGFloat xPadding = 5;
+    CGFloat xPadding = 10;
     CGFloat yPadding = xPadding;
-    
-    switch (index) {
-        case 0:
-            return CGRectMake(xPadding, yPadding, width, height);
-            break;
-            
-        case 1:
-            return CGRectMake(width+2.*xPadding, yPadding, width, height);
-            break;
 
-        case 2:
-            return CGRectMake(xPadding, height+2.*yPadding, width, height);
-            break;
+    return CGRectMake(xPadding, yPadding, 180, 180);
 
-        case 3:
-            return CGRectMake(width+xPadding, height+2.*yPadding, width, height);
-            break;
-
-        default:
-            NSAssert(NO, @"inconsistent - expected 0 <= index <= 3");
-            return CGRectMake(0, 0, 10, 10);
-            break;
-    }
+//    switch (index) {
+//        case 0:
+//            return CGRectMake(xPadding, yPadding, width, height);
+//            break;
+//            
+//        case 1:
+//            return CGRectMake(width+2.*xPadding, yPadding, width, height);
+//            break;
+//
+//        case 2:
+//            return CGRectMake(xPadding, height+2.*yPadding, width, height);
+//            break;
+//
+//        case 3:
+//            return CGRectMake(width+xPadding, height+2.*yPadding, width, height);
+//            break;
+//
+//        default:
+//            NSAssert(NO, @"inconsistent - expected 0 <= index <= 3");
+//            return CGRectMake(0, 0, 10, 10);
+//            break;
+//    }
 }
 
 
