@@ -43,6 +43,7 @@
 - (void)didTapOutsideMenu:(UITapGestureRecognizer *)tap {
     NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent");
     
+#warning need to verify here that no menu animation is in progress
     [self.menu popToRoot];
 }
 

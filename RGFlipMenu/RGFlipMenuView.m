@@ -19,6 +19,7 @@
 
 @implementation RGFlipMenuView {
     BOOL isSubMenu;
+    CGPoint originalCenter;
 }
 
 
@@ -119,26 +120,47 @@
         
     } else {
         
+        BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+
         // rotate menu back & forth
-        [UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
+        [UIView animateWithDuration:1.25f delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
             
-            // add the rotation transform the the EXISTING transform, thereby rotating endlessly (BUT rounding error?!?)
-            [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeRotation(M_PI_2, 0., 1., 0.))];
+            [self.layer setTransform:CATransform3DMakeRotation(M_PI_2, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
             
         } completion:^(BOOL finished) {
             
             [self toggleStatus];
             
-            BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
             BOOL isIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
             
-            [UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
-                [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeRotation(M_PI_2, 0., 1., 0.))];
+            [UIView animateWithDuration:1.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut  animations:^{
 
-                if (!self.isFrontsideShown) {
-                    if (!isIPad)
-                        [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeScale(0.9f, 0.9f, 1.f))];
+                if (self.isFrontsideShown) {
+                    [self.layer setTransform:CATransform3DIdentity];
                     
+                    [self setCenter:originalCenter];
+                    
+                    // fan back (is that a phrase?) submenus
+                    NSUInteger subMenuIndex = 0;
+                    for (RGFlipMenuView *subMenuView in self.backsideMenuView.subviews) {
+                        if (isLandscape)
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x - subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                        else
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x, subMenuView.center.y - subMenuIndex*CGRectGetHeight(self.frame))];
+                        subMenuIndex++;
+                    }
+                    
+                } else {
+                    
+                    CATransform3D transform = CATransform3DConcat(self.layer.transform, CATransform3DMakeRotation(M_PI_2, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.));
+                    
+                    // on iPhone, make a bit smaller so it fits on screen
+                    if (!isIPad)
+                        transform = CATransform3DConcat(transform, CATransform3DMakeScale(0.9f, 0.9f, 0.9f));
+                    
+                    [self.layer setTransform:transform];
+                    
+                    originalCenter = self.center;
                     if (isLandscape)
                         [self setCenter:CGPointMake(self.center.x - CGRectGetWidth(self.frame), self.center.y)];
                     else
@@ -152,25 +174,6 @@
                         else
                             [subMenuView setCenter:CGPointMake(subMenuView.center.x, subMenuView.center.y + subMenuIndex*CGRectGetHeight(self.frame))];
                         
-                        subMenuIndex++;
-                    }
-                    
-                } else {
-                    if (!isIPad)
-                        [self.layer setTransform:CATransform3DConcat(self.layer.transform, CATransform3DMakeScale(1.f, 1.f, 1.f))];
-                    
-                    if (isLandscape)
-                        [self setCenter:CGPointMake(self.center.x + CGRectGetWidth(self.frame), self.center.y)];
-                    else
-                        [self setCenter:CGPointMake(self.center.x, self.center.y + CGRectGetHeight(self.frame))];
-
-                    // fan back (is that a phrase?) submenus
-                    NSUInteger subMenuIndex = 0;
-                    for (RGFlipMenuView *subMenuView in self.backsideMenuView.subviews) {
-                        if (isLandscape)
-                            [subMenuView setCenter:CGPointMake(subMenuView.center.x - subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
-                        else
-                            [subMenuView setCenter:CGPointMake(subMenuView.center.x, subMenuView.center.y - subMenuIndex*CGRectGetHeight(self.frame))];
                         subMenuIndex++;
                     }
                     
