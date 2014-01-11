@@ -21,18 +21,15 @@
 {
     [super viewDidLoad];
     
-    self.menu = [[RGFlipMenuView alloc] initWithSize:CGSizeMake(200., 200.)
-                                             text:@"Menu Help"
-                                            block:^{
-                                                NSLog(@"front side selected");
-                                            }
-                                    backsideMenus:@[ [RGFlipMenuView menuWithText:@"Solo Play" block:^{ NSLog(@"selected solo"); }],
-                                                     [RGFlipMenuView menuWithText:@"Two Player (local)" block:^{ NSLog(@"selected two player (local)"); }],
-                                                     [RGFlipMenuView menuWithText:@"Login with Game Center" block:^{ NSLog(@"selected Game Center"); }]]
-                  ];
-    
+    self.menu = [[RGFlipMenuView alloc] initWithText:@"Menu Help"
+                                         actionBlock:^{
+                                             NSLog(@"selected main menu");
+                                         }
+                                            subMenus:@[ [RGFlipMenuView subMenuWithText:@"Solo Play" actionBlock:^{ NSLog(@"selected solo"); }],
+                                                        [RGFlipMenuView subMenuWithText:@"Two Player (local)" actionBlock:^{ NSLog(@"selected two player (local)"); }],
+                                                        [RGFlipMenuView subMenuWithText:@"Login with Game Center" actionBlock:^{ NSLog(@"selected Game Center"); }]]
+                 ];
     self.menu.center = self.view.middlePoint;
-    [self.menu setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin];
     [self.view addSubview:self.menu];
     
     UITapGestureRecognizer *tapOutsideMenu = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapOutsideMenu:)];

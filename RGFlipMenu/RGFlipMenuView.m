@@ -9,10 +9,10 @@
 #import "RGFlipMenuView.h"
 
 @interface RGFlipMenuView ()
-@property (copy) void (^didSelectMenuBlock) (void);
+@property (copy) void (^actionBlock) (void);
 @property (nonatomic, strong) UILabel *menuLabel;
 @property (nonatomic, strong) UIView *backsideMenuView;
-@property (nonatomic, strong) NSArray *backsideMenus;
+@property (nonatomic, strong) NSArray *subMenus;
 @property (nonatomic, assign) BOOL isFrontsideShown;
 @end
 
@@ -22,6 +22,12 @@
     CGPoint originalCenter;
 }
 
+#define kRGHeight 180
+#define kRGWidth  180
+
+
+////////////////////////////////////////////////////////////////////
+# pragma mark - Public methods
 
 -(void)popToRoot {
     NSAssert(!isSubMenu, @"switch to root only allowed for main/root menu, not the sub menus");
@@ -30,40 +36,38 @@
     }
 }
 
+- (NSString *)menuText {
+    return self.menuLabel.text;
+}
 
-// factory
-+ (id)menuWithText:(NSString *)menuText block:(void (^)(void))didSelectMenu {
-    NSAssert(menuText, @"menuText is mandatory");
-    NSAssert(didSelectMenu, @"didSelectMenu block is mandatory");
+
+////////////////////////////////////////////////////////////////////
+# pragma mark - public initializers and factories
+
++ (id)subMenuWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock {
+    NSAssert(theMenuText, @"menuText is mandatory");
+    NSAssert(theActionBlock, @"actionBlock block is mandatory");
     
-    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithSize:CGSizeMake(180, 180) text:menuText block:didSelectMenu backsideMenus:NULL isSubMenu:YES];
+    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, kRGWidth, kRGHeight) text:theMenuText actionBlock:theActionBlock subMenus:NULL isSubMenu:YES];
     return menu;
 }
 
 
-// public inits
-- (id)initWithSize:(CGSize)size text:(NSString *)menuText block:(void (^)(void))didSelectMenu backsideMenus:(NSArray *)backsideMenus {
-    return [self initWithSize:size text:menuText block:didSelectMenu backsideMenus:backsideMenus isSubMenu:NO];
-}
-
-- (id)initWithFrame:(CGRect)frame text:(NSString *)menuText block:(void (^)(void))didSelectMenuBlock backsideMenus:(NSArray *)backsideMenus {
-    return [self initWithFrame:frame text:menuText block:didSelectMenuBlock backsideMenus:backsideMenus isSubMenu:NO];
-}
-
-- (id)initWithSize:(CGSize)size text:(NSString *)menuText block:(void (^)(void))didSelectMenu backsideMenus:(NSArray *)backsideMenus isSubMenu:(BOOL)subMenuFlag {
-    
-    CGRect frame = CGRectMake(0, 0, size.width, size.height);
-    self = [self initWithFrame:frame text:menuText block:didSelectMenu backsideMenus:backsideMenus isSubMenu:(BOOL)subMenuFlag];
+- (id)initWithText:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus {
+    CGRect frame = CGRectMake(0, 0, kRGWidth, kRGHeight);
+    self = [self initWithFrame:frame text:menuText actionBlock:theActionBlock subMenus:theSubMenus isSubMenu:NO];
     return self;
 }
 
 
-// designated initializer
-- (id)initWithFrame:(CGRect)frame text:(NSString *)menuText block:(void (^)(void))didSelectMenuBlock backsideMenus:(NSArray *)backsideMenus isSubMenu:(BOOL)subMenuFlag {
+////////////////////////////////////////////////////////////////////
+# pragma mark - designated initializer
+
+- (id)initWithFrame:(CGRect)frame text:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus isSubMenu:(BOOL)theSubMenuFlag {
     self = [super initWithFrame:frame];
     if (self) {
         
-        isSubMenu = subMenuFlag;
+        isSubMenu = theSubMenuFlag;
         
         [self setBackgroundColor:[UIColor yellowColor]];
         UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame))];
@@ -84,7 +88,7 @@
         [self addSubview:self.backsideMenuView];
 
         NSUInteger subMenuIndex = 0;
-        for (RGFlipMenuView *subMenuView in backsideMenus) {
+        for (RGFlipMenuView *subMenuView in theSubMenus) {
             NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"expected instance RGMenuView class in backsideMenu array");
             
             CGRect frame = [self subMenuFrameWithIndex:subMenuIndex];
@@ -93,20 +97,17 @@
             subMenuIndex ++;
         }
         
-        self.backsideMenus = backsideMenus;
+        self.subMenus = theSubMenus;
         
         self.isFrontsideShown = YES;
-        self.didSelectMenuBlock = didSelectMenuBlock;
+        self.actionBlock = theActionBlock;
         
+        [self setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin];
+
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapMenu)];
         [self addGestureRecognizer:tap];
     }
     return self;
-}
-
-
-- (NSString *)menuText {
-    return self.menuLabel.text;
 }
 
 
@@ -116,7 +117,7 @@
 - (void)didTapMenu {
     
     if (isSubMenu) {
-        self.didSelectMenuBlock();
+        self.actionBlock();
         
     } else {
         
@@ -180,7 +181,7 @@
                 }
 
             } completion:^(BOOL finished) {
-                self.isFrontsideShown ? self.didSelectMenuBlock() : nil; // todoRG pending - call block of background menu
+                self.isFrontsideShown ? self.actionBlock() : nil; // todoRG pending - call block of background menu
             }];
             
         }];

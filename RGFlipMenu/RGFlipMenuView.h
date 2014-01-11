@@ -14,8 +14,7 @@
 
 - (void)popToRoot;
 
-+ (id)menuWithText:(NSString *)menuText block:(void (^)(void))didSelectMenu;
-- (id)initWithFrame:(CGRect)frame text:(NSString *)menuText block:(void (^)(void))didSelectMenuBlock backsideMenus:(NSArray *)backsideMenus;
-- (id)initWithSize:(CGSize)size text:(NSString *)menuText block:(void (^)(void))didSelectMenuBlock backsideMenus:(NSArray *)backsideMenus;
++ (id)subMenuWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
+- (id)initWithText:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
 
 @end
