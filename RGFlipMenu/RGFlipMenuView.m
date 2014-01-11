@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIView *subMenusView;
 
 @property (nonatomic, strong) UILabel *menuLabel;
+@property (nonatomic, strong) UILabel *menuLabelBack;
 @property (nonatomic, strong) NSArray *subMenus;
 @property (nonatomic, assign) BOOL isFrontsideShown;
 @end
@@ -87,7 +88,18 @@
         [self.mainMenuView setBackgroundColor:[UIColor yellowColor]];
         [self addSubview:self.mainMenuView];
         [self.mainMenuView addSubview:self.menuLabel];
-
+        
+        if (!isSubMenu) {
+            self.menuLabelBack = [[UILabel alloc] initWithFrame:self.menuLabel.frame];
+            [self.menuLabelBack setText:@"Back"];
+            [self.menuLabelBack setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
+            [self.menuLabelBack setTextAlignment:NSTextAlignmentCenter];
+            [self.menuLabelBack setTextColor:[UIColor darkGrayColor]];
+            [self.menuLabelBack setNumberOfLines:3];
+            [self.menuLabelBack setHidden:YES];
+            [self.mainMenuView addSubview:self.menuLabelBack];
+        }
+        
         // for main menu: create submenu view with the menu items
         if (!isSubMenu) {
             self.subMenusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(theFrame), CGRectGetHeight(theFrame))];
@@ -145,8 +157,9 @@
         [UIView animateWithDuration:kRGAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
             
             // rotate 90º; axis depends on device orientation
+//            [self.mainMenuView.layer setAnchorPoint:CGPointMake(0, 0.5)];
             [self.mainMenuView.layer setTransform:CATransform3DMakeRotation(M_PI_2, isLandscape ? 0.f : 1.f, isLandscape ? 1.f : 0.f, 0.f)];
-            
+
         } completion:^(BOOL finished) {
             
             // then rotate 90º again, but also show sub menus
@@ -158,7 +171,9 @@
 
                 // finish rotation of main menu
                 [self.mainMenuView.layer setTransform:CATransform3DMakeRotation(self.isFrontsideShown ? 0 : M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
-                
+                // for the back menu label: set rotation to 180
+                [self.menuLabelBack.layer setTransform:CATransform3DMakeRotation(M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
+    
 
                 if (self.isFrontsideShown) {
                     [self.layer setTransform:CATransform3DIdentity];
@@ -202,8 +217,9 @@
 
 - (void)toggleStatus {
     self.isFrontsideShown = !self.isFrontsideShown;
-//    [self.menuLabel setHidden:!self.isFrontsideShown];
-//    [self.subMenusView setHidden:self.isFrontsideShown];
+    [self.menuLabel setHidden:!self.isFrontsideShown];
+    [self.subMenusView setHidden:self.isFrontsideShown];
+    [self.menuLabelBack setHidden:self.isFrontsideShown];
 }
 
 
