@@ -21,13 +21,13 @@
 {
     [super viewDidLoad];
     
-    self.menu = [[RGFlipMenuView alloc] initWithText:@"Menu Help"
+    self.menu = [[RGFlipMenuView alloc] initWithText:@"Main Menu"
                                          actionBlock:^{
                                              NSLog(@"selected main menu");
                                          }
-                                            subMenus:@[ [RGFlipMenuView subMenuWithText:@"Solo Play" actionBlock:^{ NSLog(@"selected solo"); }],
-                                                        [RGFlipMenuView subMenuWithText:@"Two Player (local)" actionBlock:^{ NSLog(@"selected two player (local)"); }],
-                                                        [RGFlipMenuView subMenuWithText:@"Login with Game Center" actionBlock:^{ NSLog(@"selected Game Center"); }]]
+                                            subMenus:@[ [RGFlipMenuView subMenuWithText:@"Sub Menu 1" actionBlock:^{ NSLog(@"selected sub menu 1"); }],
+                                                        [RGFlipMenuView subMenuWithText:@"Sub Menu 2" actionBlock:^{ NSLog(@"selected sub menu 2"); }],
+                                                        [RGFlipMenuView subMenuWithText:@"Sub Menu 3" actionBlock:^{ NSLog(@"selected sub menu 3"); }]]
                  ];
     self.menu.center = self.view.middlePoint;
     [self.view addSubview:self.menu];
@@ -38,7 +38,7 @@
 
 
 - (void)didTapOutsideMenu:(UITapGestureRecognizer *)tap {
-    NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent");
+    NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent - another gesture recognizer?");
     
 #warning need to verify here that no menu animation is in progress
     [self.menu popToRoot];
