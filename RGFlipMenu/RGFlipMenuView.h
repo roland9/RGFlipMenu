@@ -13,6 +13,7 @@
 @property (nonatomic, readonly) NSString *menuText;
 
 - (void)popToRoot;
+- (void)changeText:(NSString *)theText;
 
 + (id)subMenuWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
 - (id)initWithText:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;

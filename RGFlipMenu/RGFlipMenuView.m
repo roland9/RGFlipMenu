@@ -42,6 +42,12 @@
     }
 }
 
+
+- (void)changeText:(NSString *)theText {
+    self.menuLabel.text = theText;
+}
+
+
 - (NSString *)menuText {
     return self.menuLabel.text;
 }
