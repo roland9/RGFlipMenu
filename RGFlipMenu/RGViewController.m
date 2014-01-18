@@ -22,8 +22,11 @@
     [super viewDidLoad];
     
     RGFlipMenuView *subMenuWithChangingText = [RGFlipMenuView subMenuWithText:@"Sub Menu 3" actionBlock:^{ NSLog(@"selected sub menu 3"); }];
-        
-    self.menu = [[RGFlipMenuView alloc] initWithText:@"Main Menu"
+    
+#define kRGFMInset 50
+    
+    self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
+                                                 text:@"Main Menu"
                                          actionBlock:^{
                                              NSLog(@"selected main menu");
                                          }

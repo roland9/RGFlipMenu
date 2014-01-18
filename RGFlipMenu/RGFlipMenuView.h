@@ -16,6 +16,6 @@
 - (void)changeText:(NSString *)theText;
 
 + (id)subMenuWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
-- (id)initWithText:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
+- (id)initWithFrame:(CGRect)theFrame text:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
 
 @end
