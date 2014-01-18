@@ -148,10 +148,9 @@
 
 - (void)didTapMenu {
     
-    if (isSubMenu) {
-        self.actionBlock();
-        
-    } else {
+    self.actionBlock();
+    
+    if (!isSubMenu) {
         
         BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
@@ -224,7 +223,6 @@
                 }
 
             } completion:^(BOOL finished) {
-                self.isFrontsideShown ? self.actionBlock() : nil; // todoRG pending - call block of background menu
                 if (self.isFrontsideShown)
                     [self.subMenusView setHidden:YES];
             }];
