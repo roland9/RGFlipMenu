@@ -23,6 +23,7 @@
 @implementation RGFlipMenuView {
     BOOL isSubMenu;
     CGPoint originalCenter;
+    CGFloat mainMenuOffset;
 }
 
 #define kRGMainMenuWidth  180
@@ -120,7 +121,9 @@
         [self setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin];
 
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapMenu)];
-        [self addGestureRecognizer:tap];
+        [self.mainMenuView addGestureRecognizer:tap];
+
+        mainMenuOffset = CGRectGetHeight(self.mainMenuView.frame);
     }
     return self;
 }
@@ -144,9 +147,9 @@
 
             CGFloat factor = self.isFrontsideShown ? -1.f : +1.f;
             if (isLandscape)
-                [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x + factor * CGRectGetWidth(self.mainMenuView.frame), self.mainMenuView.center.y)];
+                [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x + factor * mainMenuOffset, self.mainMenuView.center.y)];
             else
-                [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y + factor * CGRectGetHeight(self.mainMenuView.frame))];
+                [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y + factor * mainMenuOffset)];
             
         } completion:^(BOOL finished) {
 
@@ -158,7 +161,7 @@
             
             // rotate 90º; axis depends on device orientation
 //            [self.mainMenuView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-            [self.mainMenuView.layer setTransform:CATransform3DMakeRotation(M_PI_2, isLandscape ? 0.f : 1.f, isLandscape ? 1.f : 0.f, 0.f)];
+            [self.mainMenuView.layer setTransform:CATransform3DConcat(CATransform3DMakeScale(0.8f, 0.8f, 1.0f), CATransform3DMakeRotation(M_PI_2, isLandscape ? 0.f : 1.f, isLandscape ? 1.f : 0.f, 0.f))];
 
         } completion:^(BOOL finished) {
             
@@ -170,13 +173,14 @@
             [UIView animateWithDuration:kRGAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut  animations:^{
 
                 // finish rotation of main menu
-                [self.mainMenuView.layer setTransform:CATransform3DMakeRotation(self.isFrontsideShown ? 0 : M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
+                [self.mainMenuView.layer setTransform:CATransform3DConcat(CATransform3DMakeScale(0.6f, 0.6f, 1.0f), CATransform3DMakeRotation(self.isFrontsideShown ? 0 : M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.))];
                 // for the back menu label: set rotation to 180
                 [self.menuLabelBack.layer setTransform:CATransform3DMakeRotation(M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
     
 
                 if (self.isFrontsideShown) {
                     [self.layer setTransform:CATransform3DIdentity];
+                    [self.mainMenuView.layer setTransform:CATransform3DIdentity];
                     
                     [self setCenter:originalCenter];
                     
