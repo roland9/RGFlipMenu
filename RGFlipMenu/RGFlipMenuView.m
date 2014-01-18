@@ -28,8 +28,8 @@
 
 #define kRGMainMenuWidth  180
 #define kRGMainMenuHeight 180
-#define kRGSubMenuWidth   80
-#define kRGSubMenuHeight  80
+#define kRGSubMenuWidth   120
+#define kRGSubMenuHeight  120
 #define kRGAnimationDuration 0.4f
 
 #define kRGMainMenuColor    [UIColor yellowColor]
@@ -112,6 +112,7 @@
 
             self.subMenusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
             [self.subMenusView setHidden:YES];
+            self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
             [self addSubview:self.subMenusView];
             
             NSUInteger subMenuIndex = 0;
@@ -123,7 +124,11 @@
                 [self.subMenusView addSubview:subMenuView];
                 subMenuIndex ++;
             }
+            
         } else {
+            // inception: we are the submenu
+            self.mainMenuView.frame = CGRectMake(0, 0, kRGSubMenuWidth, kRGSubMenuWidth);
+            self.menuLabel.frame = self.mainMenuView.frame;
             [self.mainMenuView setBackgroundColor:kRGSubMenuColor];
         }
         
@@ -152,12 +157,16 @@
 
         // move the main menu over; duration twice the 90º rotations
         [UIView animateWithDuration:kRGAnimationDuration*2 delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
-
-            CGFloat factor = self.isFrontsideShown ? -1.f : +1.f;
-            if (isLandscape)
-                [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x + factor * [self mainMenuOffset], self.mainMenuView.center.y)];
-            else
-                [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y + factor * [self mainMenuOffset])];
+            
+            if (!self.isFrontsideShown)
+                [self.mainMenuView setCenter:self.middlePoint];
+            
+            else {
+                if (isLandscape)
+                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x - [self mainMenuOffset], self.mainMenuView.center.y)];
+                else
+                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y - [self mainMenuOffset])];
+            }
             
         } completion:^(BOOL finished) {
 
@@ -179,8 +188,6 @@
             // then rotate 90º again, but also show sub menus
             [self toggleStatus];
             
-            BOOL isIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
-            
             [UIView animateWithDuration:kRGAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut  animations:^{
 
                 // finish rotation of main menu
@@ -192,10 +199,11 @@
                 if (!self.isFrontsideShown) {
                     
                     // step 1: pop out submenus
+                    self.subMenusView.layer.transform = CATransform3DIdentity;
                     NSUInteger subMenuIndex = 0;
                     for (RGFlipMenuView *subMenuView in self.subMenus) {
                         if (isLandscape)
-                            [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*CGRectGetWidth(self.frame), subMenuView.center.y)];
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[self subMenuOffset], self.subMenusView.middleY)];
                         else
                             [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[self subMenuOffset])];
                         
@@ -204,9 +212,9 @@
                     
                 } else {
                     
-                    // step 1: move back submenus
-                    [self.layer setTransform:CATransform3DIdentity];
+                    // step 2: move back submenus
                     [self.mainMenuView.layer setTransform:CATransform3DIdentity];
+                    self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
                     
                     for (RGFlipMenuView *subMenuView in self.subMenus) {
                         NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
@@ -234,6 +242,8 @@
 
 
 - (CGFloat)subMenuOffset {
+//    BOOL isIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+    
     return 150;
 }
 
@@ -241,38 +251,6 @@
 - (CGFloat)mainMenuOffset {
     return 250;
 }
-
-//- (CGRect)subMenuFrameWithIndex:(NSUInteger)index {
-//    CGFloat width = 90;
-//    CGFloat height = width;
-//    CGFloat xPadding = 10;
-//    CGFloat yPadding = xPadding;
-//
-//    return CGRectMake(xPadding, yPadding, kRGSubMenuWidth, kRGSubMenuHeight);
-//
-////    switch (index) {
-////        case 0:
-////            return CGRectMake(xPadding, yPadding, width, height);
-////            break;
-////            
-////        case 1:
-////            return CGRectMake(width+2.*xPadding, yPadding, width, height);
-////            break;
-////
-////        case 2:
-////            return CGRectMake(xPadding, height+2.*yPadding, width, height);
-////            break;
-////
-////        case 3:
-////            return CGRectMake(width+xPadding, height+2.*yPadding, width, height);
-////            break;
-////
-////        default:
-////            NSAssert(NO, @"inconsistent - expected 0 <= index <= 3");
-////            return CGRectMake(0, 0, 10, 10);
-////            break;
-////    }
-//}
 
 
 @end
