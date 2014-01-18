@@ -447,14 +447,14 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/rolandg/Documents/RGFlipMenu,
+					.,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RGFlipMenu/RGFlipMenu-Prefix.pch";
 				INFOPLIST_FILE = "RGFlipMenu/RGFlipMenu-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/rolandg/Documents/RGFlipMenu,
+					.,
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -474,14 +474,14 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/rolandg/Documents/RGFlipMenu,
+					.,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RGFlipMenu/RGFlipMenu-Prefix.pch";
 				INFOPLIST_FILE = "RGFlipMenu/RGFlipMenu-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/rolandg/Documents/RGFlipMenu,
+					.,
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
