@@ -26,10 +26,6 @@
     BOOL isSubMenu;
 }
 
-#define kRGMainMenuWidth  180
-#define kRGMainMenuHeight 180
-#define kRGSubMenuWidth   120
-#define kRGSubMenuHeight  120
 #define kRGAnimationDuration 0.4f
 
 #define kRGMainMenuColor    [UIColor yellowColor]
@@ -63,7 +59,7 @@
     NSAssert(theMenuText, @"menuText is mandatory");
     NSAssert(theActionBlock, @"actionBlock block is mandatory");
     
-    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, kRGSubMenuWidth, kRGSubMenuHeight) text:theMenuText actionBlock:theActionBlock subMenus:NULL isSubMenu:YES];
+    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, [self subMenuWidth], [self subMenuHeight]) text:theMenuText actionBlock:theActionBlock subMenus:NULL isSubMenu:YES];
     return menu;
 }
 
@@ -86,14 +82,14 @@
         self.isFrontsideShown = YES;
         self.actionBlock = theActionBlock;
         
-        self.menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, kRGMainMenuWidth, kRGMainMenuHeight)];
+        self.menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
         [self.menuLabel setText:theMenuText];
         [self.menuLabel setFont:[UIFont preferredFontForTextStyle:isSubMenu ? UIFontTextStyleSubheadline : UIFontTextStyleHeadline]];
         [self.menuLabel setTextAlignment:NSTextAlignmentCenter];
         [self.menuLabel setTextColor:[UIColor darkGrayColor]];
         [self.menuLabel setNumberOfLines:3];
 
-        self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kRGMainMenuWidth, kRGMainMenuHeight)];
+        self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
         self.mainMenuView.center = self.middlePoint;
         [self.mainMenuView setBackgroundColor:kRGMainMenuColor];
         [self.mainMenuView addSubview:self.menuLabel];
@@ -119,7 +115,7 @@
             for (RGFlipMenuView *subMenuView in theSubMenus) {
                 NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"expected instance RGMenuView class in backsideMenu array");
                 
-                [subMenuView setFrame:CGRectMake(0, 0, kRGSubMenuWidth, kRGSubMenuHeight)];
+                [subMenuView setFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight])];
                 subMenuView.center = self.middlePoint;
                 [self.subMenusView addSubview:subMenuView];
                 subMenuIndex ++;
@@ -127,7 +123,7 @@
             
         } else {
             // inception: we are the submenu
-            self.mainMenuView.frame = CGRectMake(0, 0, kRGSubMenuWidth, kRGSubMenuWidth);
+            self.mainMenuView.frame = CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]);
             self.menuLabel.frame = self.mainMenuView.frame;
             [self.mainMenuView setBackgroundColor:kRGSubMenuColor];
         }
@@ -162,9 +158,9 @@
             
             else {
                 if (isLandscape)
-                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x - [self mainMenuOffset], self.mainMenuView.center.y)];
+                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x - [RGFlipMenuView mainMenuOffset], self.mainMenuView.center.y)];
                 else
-                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y - [self mainMenuOffset])];
+                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y - [RGFlipMenuView mainMenuOffset])];
             }
             
         } completion:^(BOOL finished) {
@@ -190,7 +186,7 @@
             [UIView animateWithDuration:kRGAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut  animations:^{
 
                 // finish rotation of main menu
-                [self.mainMenuView.layer setTransform:CATransform3DConcat(CATransform3DMakeScale(0.6f, 0.6f, 1.0f), CATransform3DMakeRotation(self.isFrontsideShown ? 0 : M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.))];
+                [self.mainMenuView.layer setTransform:CATransform3DConcat(CATransform3DMakeScale(0.7f, 0.7f, 1.0f), CATransform3DMakeRotation(self.isFrontsideShown ? 0 : M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.))];
                 // for the back menu label: set rotation to 180
                 [self.menuLabelBack.layer setTransform:CATransform3DMakeRotation(M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
     
@@ -202,9 +198,9 @@
                     NSUInteger subMenuIndex = 0;
                     for (RGFlipMenuView *subMenuView in self.subMenus) {
                         if (isLandscape)
-                            [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[self subMenuOffset], self.subMenusView.middleY)];
+                            [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
                         else
-                            [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[self subMenuOffset])];
+                            [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
                         
                         subMenuIndex++;
                     }
@@ -239,15 +235,54 @@
 }
 
 
-- (CGFloat)subMenuOffset {
-//    BOOL isIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
-    
-    return 150;
++ (CGFloat)subMenuAllOffset {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 50;
+    else
+        return 30;
+}
+
++ (CGFloat)subMenuOffset {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 150;
+    else
+        return 100;
+}
+
++ (CGFloat)mainMenuWidth {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 180;
+    else
+        return 120;
+}
+
++ (CGFloat)mainMenuHeight {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 180;
+    else
+        return 120;
+}
+
++ (CGFloat)subMenuWidth {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 140;
+    else
+        return 90;
+}
+
++ (CGFloat)subMenuHeight {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 140;
+    else
+        return 90;
 }
 
 
-- (CGFloat)mainMenuOffset {
-    return 250;
++ (CGFloat)mainMenuOffset {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 250;
+    else
+        return 150;
 }
 
 
