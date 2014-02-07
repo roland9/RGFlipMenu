@@ -150,80 +150,67 @@
         
         BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
-        // move the main menu over; duration twice the 90º rotations
-        [UIView animateWithDuration:kRGAnimationDuration*2 delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
-            
-            if (!self.isFrontsideShown)
-                [self.mainMenuView setCenter:self.middlePoint];
-            
-            else {
+        // move the main menu
+        [UIView animateWithDuration:2.5 animations:^{
+            if (!self.isFrontsideShown) {
+                [self toggleStatus];
+                [self setCenter:self.superview.middlePoint];
+            } else {
+                [self toggleStatus];
                 if (isLandscape)
-                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x - [RGFlipMenuView mainMenuOffset], self.mainMenuView.center.y)];
+                    [self setCenter:CGPointMake(self.center.x - [RGFlipMenuView mainMenuOffset], self.center.y)];
                 else
-                    [self.mainMenuView setCenter:CGPointMake(self.mainMenuView.center.x, self.mainMenuView.center.y - [RGFlipMenuView mainMenuOffset])];
+                    [self setCenter:CGPointMake(self.center.x, self.center.y - [RGFlipMenuView mainMenuOffset]) ];
             }
-            
+
         } completion:^(BOOL finished) {
 
         }];
         
-        
-        if (self.isFrontsideShown)
+
+        if (!self.isFrontsideShown) {
             [self.subMenusView setHidden:NO];
-
-        // rotate main menu
-        [UIView animateWithDuration:kRGAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
-            
-            // rotate 90º; axis depends on device orientation
-//            [self.mainMenuView.layer setAnchorPoint:CGPointMake(0, 0.5)];
-            [self.mainMenuView.layer setTransform:CATransform3DConcat(CATransform3DMakeScale(0.8f, 0.8f, 1.0f), CATransform3DMakeRotation(M_PI_2, isLandscape ? 0.f : 1.f, isLandscape ? 1.f : 0.f, 0.f))];
-
-        } completion:^(BOOL finished) {
-            
-            // then rotate 90º again, but also show sub menus
-            [self toggleStatus];
-            
-            [UIView animateWithDuration:kRGAnimationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut  animations:^{
-
-                // finish rotation of main menu
-                [self.mainMenuView.layer setTransform:CATransform3DConcat(CATransform3DMakeScale(0.7f, 0.7f, 1.0f), CATransform3DMakeRotation(self.isFrontsideShown ? 0 : M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.))];
-                // for the back menu label: set rotation to 180
-                [self.menuLabelBack.layer setTransform:CATransform3DMakeRotation(M_PI, isLandscape ? 0. : 1., isLandscape ? 1. : 0., 0.)];
-    
-
-                if (!self.isFrontsideShown) {
+        }
+        
+        [UIView animateWithDuration:2.5 animations:^{
+            if (!self.isFrontsideShown) {
+                
+                // step 1: pop out submenus
+                self.subMenusView.layer.transform = CATransform3DIdentity;
+                NSUInteger subMenuIndex = 0;
+                for (RGFlipMenuView *subMenuView in self.subMenus) {
+                    if (isLandscape)
+                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
+                    else
+                        [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
                     
-                    // step 1: pop out submenus
-                    self.subMenusView.layer.transform = CATransform3DIdentity;
-                    NSUInteger subMenuIndex = 0;
-                    for (RGFlipMenuView *subMenuView in self.subMenus) {
-                        if (isLandscape)
-                            [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
-                        else
-                            [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
-                        
-                        subMenuIndex++;
-                    }
-                    
-                } else {
-                    
-                    // step 2: move back submenus
-                    [self.mainMenuView.layer setTransform:CATransform3DIdentity];
-                    self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
-                    
-                    for (RGFlipMenuView *subMenuView in self.subMenus) {
-                        NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-                        subMenuView.center = self.middlePoint;
-                    }
-                    
+                    subMenuIndex++;
                 }
-
-            } completion:^(BOOL finished) {
-                if (self.isFrontsideShown)
-                    [self.subMenusView setHidden:YES];
-            }];
-            
+                
+            } else {
+                
+                // step 2: move back submenus
+                [self.mainMenuView.layer setTransform:CATransform3DIdentity];
+                self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
+                
+                for (RGFlipMenuView *subMenuView in self.subMenus) {
+                    NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
+                    subMenuView.center = self.middlePoint;
+                }
+                
+            }
         }];
+        
+        // and flip
+        [UIView transitionWithView:self.mainMenuView
+                          duration:2.5
+                           options:(self.isFrontsideShown ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop) | UIViewAnimationOptionAllowAnimatedContent
+                        animations:^{
+                        } completion:^(BOOL finished) {
+                            
+                            
+                            
+                        }];
     }
 }
 
@@ -282,7 +269,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         return 250;
     else
-        return 150;
+        return 50;
 }
 
 
