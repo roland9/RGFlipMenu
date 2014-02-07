@@ -76,18 +76,20 @@
     self = [super initWithFrame:theFrame];
     if (self) {
         
-        self.backgroundColor = [UIColor lightGrayColor];
+//        self.backgroundColor = [UIColor lightGrayColor];
         
         isSubMenu = theSubMenuFlag;
         self.subMenus = theSubMenus;
         self.isFrontsideShown = YES;
         self.actionBlock = theActionBlock;
 
-        if (!isSubMenu)
-            self.menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
-        else
+        if (isSubMenu) {
             self.menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight])];
-
+            self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight])];
+        } else {
+            self.menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
+            self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
+        }
         
         
         [self.menuLabel setText:theMenuText];
@@ -101,10 +103,6 @@
         self.mainMenuWrapperView.center = self.middlePoint;
         [self addSubview:self.mainMenuWrapperView];
 
-        if (!isSubMenu)
-            self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
-        else
-            self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight])];
 
         self.mainMenuView.center = self.mainMenuWrapperView.middlePoint;
         [self.mainMenuView setBackgroundColor:kRGMainMenuColor];
@@ -123,7 +121,7 @@
             [self.mainMenuView addSubview:self.menuLabelBack];
 
             self.subMenusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
-            [self.subMenusView setBackgroundColor:[UIColor orangeColor]];
+//            [self.subMenusView setBackgroundColor:[UIColor orangeColor]];
             
             [self.subMenusView setHidden:YES];
             self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
@@ -264,7 +262,7 @@
 
 + (CGFloat)subMenuOffset {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 150;
+        return 180;
     else
         return 120;
 }
@@ -277,24 +275,18 @@
 }
 
 + (CGFloat)mainMenuHeight {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 180;
-    else
-        return 120;
+    return [RGFlipMenuView mainMenuWidth];
 }
 
 + (CGFloat)subMenuWidth {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 140;
+        return 160;
     else
-        return 80;
+        return 110;
 }
 
 + (CGFloat)subMenuHeight {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 140;
-    else
-        return 80;
+    return [RGFlipMenuView subMenuWidth];
 }
 
 
