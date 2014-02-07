@@ -160,7 +160,7 @@
         BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
         // move the main menu
-        [UIView animateWithDuration:2.5 animations:^{
+        [UIView animateWithDuration:kRGAnimationDuration animations:^{
             if (!self.isFrontsideShown) {
                 [self toggleStatus];
                 [self.mainMenuWrapperView setCenter:self.middlePoint];
@@ -212,14 +212,13 @@
         
         // and flip
         [UIView transitionWithView:self.mainMenuView
-                          duration:2.5
-                           options:(self.isFrontsideShown ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop) | UIViewAnimationOptionAllowAnimatedContent
+                          duration:kRGAnimationDuration
+                           options:(isLandscape ?
+                                    (self.isFrontsideShown ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
+                                    (self.isFrontsideShown ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop)
+                                    ) | UIViewAnimationOptionAllowAnimatedContent
                         animations:^{
-                        } completion:^(BOOL finished) {
-                            
-                            
-                            
-                        }];
+                        } completion:NULL];
     }
 }
 
