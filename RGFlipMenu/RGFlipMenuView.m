@@ -114,6 +114,8 @@
             [self.mainMenuView addSubview:self.menuLabelBack];
 
             self.subMenusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
+            [self.subMenusView setBackgroundColor:[UIColor orangeColor]];
+            
             [self.subMenusView setHidden:YES];
             self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
             [self insertSubview:self.subMenusView belowSubview:self.mainMenuWrapperView];
@@ -130,7 +132,6 @@
             
         } else {
             // inception: we are the submenu
-            self.mainMenuView.frame = CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]);
             self.menuLabel.frame = self.mainMenuView.frame;
             [self.mainMenuView setBackgroundColor:kRGSubMenuColor];
         }
@@ -198,6 +199,8 @@
 
         
         [UIView animateWithDuration:kRGAnimationDuration animations:^{
+            
+            // at this point in time, we have already toggled the frontside flag
             if (!self.isFrontsideShown) {
                 
                 // open menu: pop out submenus
@@ -207,7 +210,7 @@
                     if (isLandscape)
                         [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
                     else
-                        [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
+                        [subMenuView setCenter:CGPointMake(subMenuView.superview.centerX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
                     
                     subMenuIndex++;
                 }
