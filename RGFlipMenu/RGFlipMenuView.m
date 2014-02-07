@@ -27,8 +27,6 @@
     BOOL isSubMenu;
 }
 
-#define kRGAnimationDuration 0.4f
-
 #define kRGMainMenuColor    [UIColor yellowColor]
 #define kRGSubMenuColor     [UIColor greenColor]
 
@@ -118,7 +116,7 @@
             self.subMenusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
             [self.subMenusView setHidden:YES];
             self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
-            [self addSubview:self.subMenusView];
+            [self insertSubview:self.subMenusView belowSubview:self.mainMenuWrapperView];
             
             NSUInteger subMenuIndex = 0;
             for (RGFlipMenuView *subMenuView in theSubMenus) {
@@ -151,6 +149,9 @@
 ////////////////////////////////////////////////////////////////////
 # pragma mark - Private
 
+#define kRGAnimationDuration 0.4f
+
+
 - (void)didTapMenu {
     
     self.actionBlock();
@@ -159,58 +160,28 @@
         
         BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
-        // move the main menu
+        // move the main menu ...
         [UIView animateWithDuration:kRGAnimationDuration animations:^{
-            if (!self.isFrontsideShown) {
-                [self toggleStatus];
-                [self.mainMenuWrapperView setCenter:self.middlePoint];
-            } else {
+            if (self.isFrontsideShown) {
                 [self toggleStatus];
                 if (isLandscape)
                     [self.mainMenuWrapperView setCenter:CGPointMake(self.mainMenuWrapperView.center.x - [RGFlipMenuView mainMenuOffset], self.mainMenuWrapperView.center.y)];
                 else
                     [self.mainMenuWrapperView setCenter:CGPointMake(self.mainMenuWrapperView.center.x, self.mainMenuWrapperView.center.y - [RGFlipMenuView mainMenuOffset]) ];
+                
+                // make the main menu a bit smaller
+                [self.mainMenuView.layer setTransform:CATransform3DMakeScale(0.8, 0.8, 1)];
+                
+            } else {
+                [self toggleStatus];
+                [self.mainMenuWrapperView setCenter:self.middlePoint];
             }
 
         } completion:^(BOOL finished) {
 
         }];
         
-
-//        if (!self.isFrontsideShown) {
-//            [self.subMenusView setHidden:NO];
-//        }
-//        
-//        [UIView animateWithDuration:2.5 animations:^{
-//            if (!self.isFrontsideShown) {
-//                
-//                // step 1: pop out submenus
-//                self.subMenusView.layer.transform = CATransform3DIdentity;
-//                NSUInteger subMenuIndex = 0;
-//                for (RGFlipMenuView *subMenuView in self.subMenus) {
-//                    if (isLandscape)
-//                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
-//                    else
-//                        [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
-//                    
-//                    subMenuIndex++;
-//                }
-//                
-//            } else {
-//                
-//                // step 2: move back submenus
-//                [self.mainMenuView.layer setTransform:CATransform3DIdentity];
-//                self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
-//                
-//                for (RGFlipMenuView *subMenuView in self.subMenus) {
-//                    NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-//                    subMenuView.center = self.middlePoint;
-//                }
-//                
-//            }
-//        }];
-        
-        // and flip
+        // ... and flip
         [UIView transitionWithView:self.mainMenuView
                           duration:kRGAnimationDuration
                            options:(isLandscape ?
@@ -219,6 +190,49 @@
                                     ) | UIViewAnimationOptionAllowAnimatedContent
                         animations:^{
                         } completion:NULL];
+        
+        
+        // will be hidden again in completion block (so we see the animation)
+        if (!self.isFrontsideShown)
+            [self.subMenusView setHidden:NO];
+
+        
+        [UIView animateWithDuration:kRGAnimationDuration animations:^{
+            if (!self.isFrontsideShown) {
+                
+                // open menu: pop out submenus
+                self.subMenusView.layer.transform = CATransform3DIdentity;
+                NSUInteger subMenuIndex = 0;
+                for (RGFlipMenuView *subMenuView in self.subMenus) {
+                    if (isLandscape)
+                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
+                    else
+                        [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
+                    
+                    subMenuIndex++;
+                }
+                
+            } else {
+                
+                // close menu: move back submenus
+                self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
+                
+                for (RGFlipMenuView *subMenuView in self.subMenus) {
+                    NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
+                    subMenuView.center = self.middlePoint;
+                }
+                
+                // restore the original size of the main menu
+                [self.mainMenuView.layer setTransform:CATransform3DIdentity];
+                
+            }
+        } completion:^(BOOL finished) {
+            if (self.isFrontsideShown) {
+                [self.subMenusView setHidden:YES];
+            }
+        }];
+        
+
     }
 }
 
