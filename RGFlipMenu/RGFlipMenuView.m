@@ -13,6 +13,7 @@
 @interface RGFlipMenuView ()
 @property (copy) void (^actionBlock) (void);
 @property (nonatomic, strong) UIView *mainMenuView;
+@property (nonatomic, strong) UIView *mainMenuWrapperView;
 @property (nonatomic, strong) UIView *subMenusView;
 
 @property (nonatomic, strong) UILabel *menuLabel;
@@ -77,6 +78,8 @@
     self = [super initWithFrame:theFrame];
     if (self) {
         
+        self.backgroundColor = [UIColor lightGrayColor];
+        
         isSubMenu = theSubMenuFlag;
         self.subMenus = theSubMenus;
         self.isFrontsideShown = YES;
@@ -89,11 +92,17 @@
         [self.menuLabel setTextColor:[UIColor darkGrayColor]];
         [self.menuLabel setNumberOfLines:3];
 
+        // the mainMenuWrapperView is required so that the main Menu move animation is consistent
+        self.mainMenuWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
+        self.mainMenuWrapperView.center = self.middlePoint;
+        [self addSubview:self.mainMenuWrapperView];
+        
         self.mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
-        self.mainMenuView.center = self.middlePoint;
+        
+        self.mainMenuView.center = self.mainMenuWrapperView.middlePoint;
         [self.mainMenuView setBackgroundColor:kRGMainMenuColor];
         [self.mainMenuView addSubview:self.menuLabel];
-        [self addSubview:self.mainMenuView];
+        [self.mainMenuWrapperView addSubview:self.mainMenuView];
         
         // for main menu: create backside view & submenu view with the menu items
         if (!isSubMenu) {
@@ -154,13 +163,13 @@
         [UIView animateWithDuration:2.5 animations:^{
             if (!self.isFrontsideShown) {
                 [self toggleStatus];
-                [self setCenter:self.superview.middlePoint];
+                [self.mainMenuWrapperView setCenter:self.middlePoint];
             } else {
                 [self toggleStatus];
                 if (isLandscape)
-                    [self setCenter:CGPointMake(self.center.x - [RGFlipMenuView mainMenuOffset], self.center.y)];
+                    [self.mainMenuWrapperView setCenter:CGPointMake(self.mainMenuWrapperView.center.x - [RGFlipMenuView mainMenuOffset], self.mainMenuWrapperView.center.y)];
                 else
-                    [self setCenter:CGPointMake(self.center.x, self.center.y - [RGFlipMenuView mainMenuOffset]) ];
+                    [self.mainMenuWrapperView setCenter:CGPointMake(self.mainMenuWrapperView.center.x, self.mainMenuWrapperView.center.y - [RGFlipMenuView mainMenuOffset]) ];
             }
 
         } completion:^(BOOL finished) {
@@ -168,38 +177,38 @@
         }];
         
 
-        if (!self.isFrontsideShown) {
-            [self.subMenusView setHidden:NO];
-        }
-        
-        [UIView animateWithDuration:2.5 animations:^{
-            if (!self.isFrontsideShown) {
-                
-                // step 1: pop out submenus
-                self.subMenusView.layer.transform = CATransform3DIdentity;
-                NSUInteger subMenuIndex = 0;
-                for (RGFlipMenuView *subMenuView in self.subMenus) {
-                    if (isLandscape)
-                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
-                    else
-                        [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
-                    
-                    subMenuIndex++;
-                }
-                
-            } else {
-                
-                // step 2: move back submenus
-                [self.mainMenuView.layer setTransform:CATransform3DIdentity];
-                self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
-                
-                for (RGFlipMenuView *subMenuView in self.subMenus) {
-                    NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-                    subMenuView.center = self.middlePoint;
-                }
-                
-            }
-        }];
+//        if (!self.isFrontsideShown) {
+//            [self.subMenusView setHidden:NO];
+//        }
+//        
+//        [UIView animateWithDuration:2.5 animations:^{
+//            if (!self.isFrontsideShown) {
+//                
+//                // step 1: pop out submenus
+//                self.subMenusView.layer.transform = CATransform3DIdentity;
+//                NSUInteger subMenuIndex = 0;
+//                for (RGFlipMenuView *subMenuView in self.subMenus) {
+//                    if (isLandscape)
+//                        [subMenuView setCenter:CGPointMake(subMenuView.center.x + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset], self.subMenusView.middleY)];
+//                    else
+//                        [subMenuView setCenter:CGPointMake(self.subMenusView.middleX, subMenuView.center.y + subMenuIndex*[RGFlipMenuView subMenuOffset] - [RGFlipMenuView subMenuAllOffset])];
+//                    
+//                    subMenuIndex++;
+//                }
+//                
+//            } else {
+//                
+//                // step 2: move back submenus
+//                [self.mainMenuView.layer setTransform:CATransform3DIdentity];
+//                self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
+//                
+//                for (RGFlipMenuView *subMenuView in self.subMenus) {
+//                    NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
+//                    subMenuView.center = self.middlePoint;
+//                }
+//                
+//            }
+//        }];
         
         // and flip
         [UIView transitionWithView:self.mainMenuView
@@ -269,7 +278,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         return 250;
     else
-        return 50;
+        return 150;
 }
 
 
