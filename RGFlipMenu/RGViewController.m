@@ -21,28 +21,39 @@
 {
     [super viewDidLoad];
     
-    self.menu = [[RGFlipMenuView alloc] initWithSize:CGSizeMake(200., 200.)
-                                             text:@"Menu Help"
-                                            block:^{
-                                                NSLog(@"front side selected");
-                                            }
-                                    backsideMenus:@[ [RGFlipMenuView menuWithText:@"Solo Play" block:^{ NSLog(@"selected solo"); }],
-                                                     [RGFlipMenuView menuWithText:@"Two Player (local)" block:^{ NSLog(@"selected two player (local)"); }],
-                                                     [RGFlipMenuView menuWithText:@"Login with Game Center" block:^{ NSLog(@"selected Game Center"); }]]
-                  ];
+    RGFlipMenuView *subMenuWithChangingText = [RGFlipMenuView subMenuWithText:@"Sub Menu 3" actionBlock:^{ NSLog(@"selected sub menu 3"); }];
     
+#define kRGFMInset 50
+    
+    self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
+                                                 text:@"Main Menu"
+                                         actionBlock:^{
+                                             NSLog(@"selected main menu");
+                                         }
+                                            subMenus:@[ [RGFlipMenuView subMenuWithText:@"Sub Menu 1" actionBlock:^{ NSLog(@"selected sub menu 1"); }],
+                                                        [RGFlipMenuView subMenuWithText:@"Sub Menu 2" actionBlock:^{ NSLog(@"selected sub menu 2"); }],
+                                                        subMenuWithChangingText
+                                                        ]
+                 ];
     self.menu.center = self.view.middlePoint;
-    [self.menu setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin];
     [self.view addSubview:self.menu];
     
     UITapGestureRecognizer *tapOutsideMenu = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapOutsideMenu:)];
     [self.view addGestureRecognizer:tapOutsideMenu];
+    
+    // afte delay, change the text of one submenu
+    double delayInSeconds = 3.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [subMenuWithChangingText changeText:@"Tap me!"];
+    });
 }
 
 
 - (void)didTapOutsideMenu:(UITapGestureRecognizer *)tap {
-    NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent");
+    NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent - another gesture recognizer?");
     
+#warning need to verify here that no menu animation is in progress
     [self.menu popToRoot];
 }
 

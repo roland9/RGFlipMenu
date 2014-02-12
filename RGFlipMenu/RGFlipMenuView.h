@@ -13,9 +13,9 @@
 @property (nonatomic, readonly) NSString *menuText;
 
 - (void)popToRoot;
+- (void)changeText:(NSString *)theText;
 
-+ (id)menuWithText:(NSString *)menuText block:(void (^)(void))didSelectMenu;
-- (id)initWithFrame:(CGRect)frame text:(NSString *)menuText block:(void (^)(void))didSelectMenuBlock backsideMenus:(NSArray *)backsideMenus;
-- (id)initWithSize:(CGSize)size text:(NSString *)menuText block:(void (^)(void))didSelectMenuBlock backsideMenus:(NSArray *)backsideMenus;
++ (id)subMenuWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
+- (id)initWithFrame:(CGRect)theFrame text:(NSString *)menuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
 
 @end
