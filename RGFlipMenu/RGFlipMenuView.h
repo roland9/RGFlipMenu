@@ -23,6 +23,6 @@
 - (void)popToRoot;
 - (void)changeText:(NSString *)theText;
 
-- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus;
+- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus isSubMenu:(BOOL)theSubMenuFlag;
 
 @end

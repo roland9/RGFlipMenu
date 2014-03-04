@@ -88,7 +88,7 @@
     NSAssert(theActionBlock, @"actionBlock block is mandatory");
 
     RGFlipMenu *subMenu = [[RGFlipMenu alloc] initWithText:theMenuText actionBlock:theActionBlock];
-    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]) mainMenus:@[subMenu]];
+    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]) mainMenus:@[subMenu] isSubMenu:YES];
     menu.isSubMenu = YES;
     return menu;
 }
@@ -97,24 +97,19 @@
 ////////////////////////////////////////////////////////////////////
 # pragma mark - designated initializer
 
-- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus {
+- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus isSubMenu:(BOOL)theSubMenuFlag {
     self = [super initWithFrame:theFrame];
     if (self) {
         _mainMenus = theMainMenus;
-
-                self.backgroundColor = [UIColor lightGrayColor];
+        _isMenuClosed = YES;
+        _isSubMenu = theSubMenuFlag;
         
-        [theMainMenus enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSAssert([obj isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu classes");
-
-            RGFlipMenu *flipMainMenu = obj;
-            
-            self.isSubMenu = NO;
-            _isMenuClosed = YES;
+                self.backgroundColor = [UIColor lightGrayColor];    // troubleshooting only
+        
+        [theMainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *flipMainMenu, NSUInteger idx, BOOL *stop) {
+            NSAssert([flipMainMenu isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu classes");
             
             _menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
-            _mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
-
             [_menuLabel setText:flipMainMenu.menuText];
             [_menuLabel setFont:[UIFont preferredFontForTextStyle:self.isSubMenu ? UIFontTextStyleSubheadline : UIFontTextStyleHeadline]];
             [_menuLabel setTextAlignment:NSTextAlignmentCenter];
@@ -123,11 +118,12 @@
             
             // the mainMenuWrapperView is required so that the main Menu move animation is consistent
             _mainMenuWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
-                 [_mainMenuWrapperView setBackgroundColor:[UIColor greenColor]];
+//                 [_mainMenuWrapperView setBackgroundColor:[UIColor greenColor]];    // troubleshooting only
+            [_mainMenuWrapperView setCenter:self.middlePoint];
             
             [self addSubview:_mainMenuWrapperView];
             
-            
+            _mainMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
             _mainMenuView.center = _mainMenuWrapperView.middlePoint;
             [_mainMenuView setBackgroundColor:kRGMainMenuColor];
             [_mainMenuView addSubview:_menuLabel];
@@ -144,10 +140,9 @@
                 [_menuLabelBack setHidden:YES];
                 [_mainMenuView addSubview:_menuLabelBack];
                 
-                _subMenusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];    // size will be fixed in layoutSubviews
+                _subMenusView = [[UIView alloc] initWithFrame:self.frame];
                 [_subMenusView setBackgroundColor:[UIColor orangeColor]];
-                
-                [_subMenusView setHidden:YES];
+                [_subMenusView setHidden:YES];  // initially hide it - because menu is closed & showing front
                 _subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
                 [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
                 
@@ -157,6 +152,7 @@
                     NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
                     
                     RGFlipMenuView *subMenuView = [RGFlipMenuView subMenuWithText:subMenu.menuText actionBlock:subMenu.actionBlock];
+                    subMenuView.center = self.middlePoint;
                     [_subMenusView addSubview:subMenuView];
                     [_subMenuViews addObject:subMenuView];
                     subMenuIndex ++;
