@@ -89,7 +89,6 @@
 
     RGFlipMenu *subMenu = [[RGFlipMenu alloc] initWithText:theMenuText actionBlock:theActionBlock];
     RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]) mainMenus:@[subMenu] isSubMenu:YES];
-    menu.isSubMenu = YES;
     return menu;
 }
 
@@ -105,6 +104,8 @@
         _isSubMenu = theSubMenuFlag;
         
                 self.backgroundColor = [UIColor lightGrayColor];    // troubleshooting only
+        [self setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+        self.autoresizesSubviews = YES;
         
         [theMainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *flipMainMenu, NSUInteger idx, BOOL *stop) {
             NSAssert([flipMainMenu isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu classes");
@@ -142,6 +143,7 @@
                 
                 _subMenusView = [[UIView alloc] initWithFrame:self.frame];
                 [_subMenusView setBackgroundColor:[UIColor orangeColor]];
+                [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
                 [_subMenusView setHidden:YES];  // initially hide it - because menu is closed & showing front
                 _subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
                 [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
@@ -152,6 +154,7 @@
                     NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
                     
                     RGFlipMenuView *subMenuView = [RGFlipMenuView subMenuWithText:subMenu.menuText actionBlock:subMenu.actionBlock];
+                    subMenuView.frame = CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]);
                     subMenuView.center = self.middlePoint;
                     [_subMenusView addSubview:subMenuView];
                     [_subMenuViews addObject:subMenuView];
@@ -166,9 +169,6 @@
                 [_mainMenuView setBackgroundColor:kRGSubMenuColor];
             }
             
-            [self setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-            [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapMenu:)];
             [_mainMenuView addGestureRecognizer:tap];
             
@@ -185,7 +185,6 @@
 //- (void)layoutSubviews {
 //    [super layoutSubviews];
 //
-//    
 //    if (!self.isSubMenu) {
 //        [self.subMenusView setFrame:self.frame];
 //        if (!self.isMenuClosed) {
@@ -214,6 +213,13 @@
 //    flipMenu.actionBlock();
     
     if (!self.isSubMenu) {
+        
+        // to fix potential errors with orientation change -> better would be layoutSubviews!
+        // that doesn't work - because of transform?
+        CATransform3D originalTransform = self.subMenusView.layer.transform;
+        self.subMenusView.layer.transform = CATransform3DIdentity;
+        self.subMenusView.frame = self.frame;
+        self.subMenusView.layer.transform = originalTransform;
         
         BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
