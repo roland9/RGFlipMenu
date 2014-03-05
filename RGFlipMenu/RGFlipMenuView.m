@@ -24,6 +24,7 @@
 @property (nonatomic, strong) NSArray *subMenus;
 @property (nonatomic, strong) NSMutableArray *subMenuViews;
 
+@property (nonatomic, copy) void (^actionBlock) (void);
 
 @property (nonatomic, assign) BOOL isMenuClosed;
 @end
@@ -66,6 +67,9 @@
         [theMainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *flipMainMenu, NSUInteger idx, BOOL *stop) {
             NSAssert([flipMainMenu isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu classes");
             
+#warning pending handle multiple main menus properly
+            _actionBlock = flipMainMenu.actionBlock;
+            
             _menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
             [_menuLabel setText:flipMainMenu.menuText];
             [_menuLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
@@ -97,7 +101,7 @@
             [_mainMenuView addSubview:_menuLabelBack];
             
             _subMenusView = [[UIView alloc] initWithFrame:self.frame];
-//            [_subMenusView setBackgroundColor:[UIColor orangeColor]];
+//            [_subMenusView setBackgroundColor:[UIColor orangeColor]];    // troubleshooting only
             [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
             [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
 
@@ -127,7 +131,6 @@
 # pragma mark - Private
 
 - (void)layoutSubviews {
-    NSLog(@"layoutSubviews");
     [super layoutSubviews];
     
     [self positionSubviews];
@@ -179,6 +182,8 @@
 
 - (void)didTapMenu:(id)sender {
 
+    self.actionBlock();
+    
     [self toggleStatus];
     [UIView animateWithDuration:kRGAnimationDuration animations:^{
         [self positionSubviews];
