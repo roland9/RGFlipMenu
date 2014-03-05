@@ -35,8 +35,7 @@
 
 -(void)popToRoot {
     if (!self.isMenuClosed) {
-#warning pending
-//        [self didTapMenu];
+        [self didTapMenu:self];
     }
 }
 
@@ -98,12 +97,11 @@
             [_mainMenuView addSubview:_menuLabelBack];
             
             _subMenusView = [[UIView alloc] initWithFrame:self.frame];
-            [_subMenusView setBackgroundColor:[UIColor orangeColor]];
+//            [_subMenusView setBackgroundColor:[UIColor orangeColor]];
             [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-            [_subMenusView setHidden:YES];  // initially hide it - because menu is closed & showing front
-            _subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
             [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
 
+            _subMenuViews = [NSMutableArray arrayWithCapacity:[flipMainMenu.subMenus count]];
             for (RGFlipMenu *subMenu in flipMainMenu.subMenus) {
                 NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
                 
@@ -138,44 +136,41 @@
 
 - (void)positionSubviews {
 
-    self.subMenusView.frame = self.frame;
-    self.subMenusView.center = self.middlePoint;
-    
     if (self.isMenuClosed) {
         
+        // close menu: center main menu & restore size ...
         self.mainMenuWrapperView.center = self.middlePoint;
-        
-        // close menu: move back submenus
-        self.subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
-        
-        for (RGFlipMenuView *subMenuView in self.subMenuViews) {
-            NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-            subMenuView.center = self.middlePoint;
-        }
-        
-        // restore the original size of the main menu
         [self.mainMenuView.layer setTransform:CATransform3DIdentity];
+        
+        // ... and move back submenus
+        self.subMenusView.frame = self.mainMenuWrapperView.frame;
+        self.subMenusView.center = self.middlePoint;
+        
+        [self.subMenuViews enumerateObjectsUsingBlock:^(RGFlipSubMenuView *subMenuView, NSUInteger idx, BOOL *stop) {
+            NSAssert([subMenuView isKindOfClass:[RGFlipSubMenuView class]], @"inconsistent");
+            subMenuView.center = self.subMenusView.middlePoint;
+            subMenuView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
+        }];
 
     } else {
         
-        // move the main menu ...
-        BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
-        if (isLandscape)
+        // open menu: de-center main menu & shrink it ...
+        if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
             [self.mainMenuWrapperView setCenter:CGPointMake(self.center.x - [RGFlipMenuView mainMenuOffset], self.center.y)];
         else
             [self.mainMenuWrapperView setCenter:CGPointMake(self.center.x, self.center.y - [RGFlipMenuView mainMenuOffset]) ];
         
-        // make the main menu a bit smaller
         [self.mainMenuView.layer setTransform:CATransform3DMakeScale(0.8, 0.8, 1)];
 
-//        // open menu: pop out submenus
-//        self.subMenusView.layer.transform = CATransform3DIdentity;
-//        NSUInteger subMenuIndex = 0;
-//        for (RGFlipMenuView *subMenuView in self.subMenuViews) {
-//            NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-//            [subMenuView setCenter:[RGFlipMenuView subMenuCenterWithIndex:subMenuIndex maxSubMenus:[self.subMenus count] parentView:self.subMenusView]];
-//            subMenuIndex++;
-//        }
+        // ... and pop out submenus
+        self.subMenusView.frame = self.frame;
+        self.subMenusView.center = self.middlePoint;
+
+        [self.subMenuViews enumerateObjectsUsingBlock:^(RGFlipSubMenuView *subMenuView, NSUInteger idx, BOOL *stop) {
+            NSAssert([subMenuView isKindOfClass:[RGFlipSubMenuView class]], @"inconsistent");
+            subMenuView.center = [RGFlipMenuView subMenuCenterWithIndex:idx maxSubMenus:[self.subMenus count] parentView:self.subMenusView];
+            subMenuView.layer.transform = CATransform3DIdentity;
+        }];
     }
 }
 
@@ -183,11 +178,7 @@
 
 
 - (void)didTapMenu:(id)sender {
-    //    NSAssert([sender isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu as sender");
-    //    RGFlipMenu *flipMenu;
-    //
-    //    flipMenu.actionBlock();
-    
+
     [self toggleStatus];
     [UIView animateWithDuration:kRGAnimationDuration animations:^{
         [self positionSubviews];
@@ -204,16 +195,6 @@
                                 ) | UIViewAnimationOptionAllowAnimatedContent
                     animations:^{
                     } completion:NULL];
-    
-    
-    // will be hidden again in completion block (so we see the animation)
-    if (!self.isMenuClosed)
-        [self.subMenusView setHidden:NO];
-    
-    
-    //            if (self.isMenuClosed) {
-    //                [self.subMenusView setHidden:YES];
-    //            }
 }
 
 
