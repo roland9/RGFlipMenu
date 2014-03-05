@@ -187,26 +187,16 @@
     [super layoutSubviews];
     
     [self positionSubviews];
-    
-//    if (!self.isSubMenu) {
-//        [self.subMenusView setFrame:self.frame];
-//        if (!self.isMenuClosed) {
-//            [self.mainMenuWrapperView setCenter:CGPointMake(self.mainMenuWrapperView.center.x, self.mainMenuWrapperView.center.y - [RGFlipMenuView mainMenuOffset]) ];
-//            
-//        } else
-//            [self.mainMenuWrapperView setCenter:self.middlePoint];
-//        
-//        //    [self.subMenuViews enumerateObjectsUsingBlock:^(RGFlipMenuView *flipMenuView, NSUInteger idx, BOOL *stop) {
-//        //        NSAssert([flipMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-//        //        [flipMenuView setFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight])];
-//        //        [flipMenuView setCenter:self.middlePoint];
-//        //    }];
-//    }
 }
 
 
 - (void)positionSubviews {
+
+    self.subMenusView.frame = self.frame;
+    self.subMenusView.center = self.middlePoint;
+    
     if (self.isMenuClosed) {
+        
         self.mainMenuWrapperView.center = self.middlePoint;
         
         // close menu: move back submenus
@@ -221,6 +211,7 @@
         [self.mainMenuView.layer setTransform:CATransform3DIdentity];
 
     } else {
+        
         // move the main menu ...
         BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
         if (isLandscape)
@@ -231,14 +222,14 @@
         // make the main menu a bit smaller
         [self.mainMenuView.layer setTransform:CATransform3DMakeScale(0.8, 0.8, 1)];
 
-        // open menu: pop out submenus
-        self.subMenusView.layer.transform = CATransform3DIdentity;
-        NSUInteger subMenuIndex = 0;
-        for (RGFlipMenuView *subMenuView in self.subMenuViews) {
-            NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
-            [subMenuView setCenter:[RGFlipMenuView subMenuCenterWithIndex:subMenuIndex maxSubMenus:[self.subMenus count] parentView:self.subMenusView]];
-            subMenuIndex++;
-        }
+//        // open menu: pop out submenus
+//        self.subMenusView.layer.transform = CATransform3DIdentity;
+//        NSUInteger subMenuIndex = 0;
+//        for (RGFlipMenuView *subMenuView in self.subMenuViews) {
+//            NSAssert([subMenuView isKindOfClass:[RGFlipMenuView class]], @"inconsistent");
+//            [subMenuView setCenter:[RGFlipMenuView subMenuCenterWithIndex:subMenuIndex maxSubMenus:[self.subMenus count] parentView:self.subMenusView]];
+//            subMenuIndex++;
+//        }
     }
 }
 
