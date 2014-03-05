@@ -7,62 +7,33 @@
 //
 
 #import "RGFlipMenuView.h"
+#import "RGFlipSubMenuView.h"
+#import "RGFlipMenu.h"
 #import <FrameAccessor.h>
 
 
 @interface RGFlipMenuView ()
-@property (nonatomic, strong) UIView *mainMenuView;
 @property (nonatomic, strong) UIView *mainMenuWrapperView;
+@property (nonatomic, strong) UIView *mainMenuView;
 @property (nonatomic, strong) UIView *subMenusView;
 
 @property (nonatomic, strong) UILabel *menuLabel;
 @property (nonatomic, strong) UILabel *menuLabelBack;
+
+@property (nonatomic, strong) NSArray *mainMenus;
 @property (nonatomic, strong) NSArray *subMenus;
 @property (nonatomic, strong) NSMutableArray *subMenuViews;
 
+
 @property (nonatomic, assign) BOOL isMenuClosed;
-@property (nonatomic, assign) BOOL isSubMenu;
-
-@property (nonatomic, strong) NSArray *mainMenus;
 @end
-
-
-@interface RGFlipMenu()
-@property (nonatomic, copy) NSString *menuText;
-@property (nonatomic, copy) void (^actionBlock) (void);
-@property (nonatomic, strong) NSArray *subMenus;
-@end
-
-
-@implementation RGFlipMenu
-
-- (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus {
-    self = [super init];
-    if (self) {
-        _menuText = theMenuText;
-        _actionBlock = theActionBlock;
-        _subMenus = theSubMenus;
-    }
-    return self;
-}
-
-- (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock {
-    return [self initWithText:theMenuText actionBlock:theActionBlock subMenus:NULL];
-}
-
-@end
-
 
 @implementation RGFlipMenuView
-
-#define kRGMainMenuColor    [UIColor yellowColor]
-#define kRGSubMenuColor     [UIColor greenColor]
 
 ////////////////////////////////////////////////////////////////////
 # pragma mark - Public methods
 
 -(void)popToRoot {
-    NSAssert(!self.isSubMenu, @"switch to root only allowed for main/root menu, not the sub menus");
     if (!self.isMenuClosed) {
 #warning pending
 //        [self didTapMenu];
@@ -81,27 +52,13 @@
 
 
 ////////////////////////////////////////////////////////////////////
-# pragma mark - public initializers and factories
-
-+ (id)subMenuWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock {
-    NSAssert(theMenuText, @"menuText is mandatory");
-    NSAssert(theActionBlock, @"actionBlock block is mandatory");
-
-    RGFlipMenu *subMenu = [[RGFlipMenu alloc] initWithText:theMenuText actionBlock:theActionBlock];
-    RGFlipMenuView *menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]) mainMenus:@[subMenu] isSubMenu:YES];
-    return menu;
-}
-
-
-////////////////////////////////////////////////////////////////////
 # pragma mark - designated initializer
 
-- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus isSubMenu:(BOOL)theSubMenuFlag {
+- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus {
     self = [super initWithFrame:theFrame];
     if (self) {
         _mainMenus = theMainMenus;
         _isMenuClosed = YES;
-        _isSubMenu = theSubMenuFlag;
         
                 self.backgroundColor = [UIColor lightGrayColor];    // troubleshooting only
         [self setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
@@ -112,7 +69,7 @@
             
             _menuLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView mainMenuWidth], [RGFlipMenuView mainMenuHeight])];
             [_menuLabel setText:flipMainMenu.menuText];
-            [_menuLabel setFont:[UIFont preferredFontForTextStyle:self.isSubMenu ? UIFontTextStyleSubheadline : UIFontTextStyleHeadline]];
+            [_menuLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
             [_menuLabel setTextAlignment:NSTextAlignmentCenter];
             [_menuLabel setTextColor:[UIColor darkGrayColor]];
             [_menuLabel setNumberOfLines:3];
@@ -130,43 +87,32 @@
             [_mainMenuView addSubview:_menuLabel];
             [_mainMenuWrapperView addSubview:_mainMenuView];
             
-            // for main menu: create backside view & submenu view with the menu items
-            if (!self.isSubMenu) {
-                _menuLabelBack = [[UILabel alloc] initWithFrame:_menuLabel.frame];
-                [_menuLabelBack setText:@"Back"];
-                [_menuLabelBack setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
-                [_menuLabelBack setTextAlignment:NSTextAlignmentCenter];
-                [_menuLabelBack setTextColor:[UIColor darkGrayColor]];
-                [_menuLabelBack setNumberOfLines:3];
-                [_menuLabelBack setHidden:YES];
-                [_mainMenuView addSubview:_menuLabelBack];
+            // create backside view & submenu view with the menu items
+            _menuLabelBack = [[UILabel alloc] initWithFrame:_menuLabel.frame];
+            [_menuLabelBack setText:@"Back"];
+            [_menuLabelBack setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
+            [_menuLabelBack setTextAlignment:NSTextAlignmentCenter];
+            [_menuLabelBack setTextColor:[UIColor darkGrayColor]];
+            [_menuLabelBack setNumberOfLines:3];
+            [_menuLabelBack setHidden:YES];
+            [_mainMenuView addSubview:_menuLabelBack];
+            
+            _subMenusView = [[UIView alloc] initWithFrame:self.frame];
+            [_subMenusView setBackgroundColor:[UIColor orangeColor]];
+            [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+            [_subMenusView setHidden:YES];  // initially hide it - because menu is closed & showing front
+            _subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
+            [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
+
+            for (RGFlipMenu *subMenu in flipMainMenu.subMenus) {
+                NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
                 
-                _subMenusView = [[UIView alloc] initWithFrame:self.frame];
-                [_subMenusView setBackgroundColor:[UIColor orangeColor]];
-                [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-                [_subMenusView setHidden:YES];  // initially hide it - because menu is closed & showing front
-                _subMenusView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
-                [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
-                
-                NSUInteger subMenuIndex = 0;
-                _subMenuViews = [NSMutableArray array];
-                for (RGFlipMenu *subMenu in flipMainMenu.subMenus) {
-                    NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
-                    
-                    RGFlipMenuView *subMenuView = [RGFlipMenuView subMenuWithText:subMenu.menuText actionBlock:subMenu.actionBlock];
-                    subMenuView.frame = CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]);
-                    subMenuView.center = self.middlePoint;
-                    [_subMenusView addSubview:subMenuView];
-                    [_subMenuViews addObject:subMenuView];
-                    subMenuIndex ++;
-                }
-                if (flipMainMenu.subMenus) {
-                    _subMenus = flipMainMenu.subMenus;
-                }
-                
-            } else {
-                // inception: we are the submenu
-                [_mainMenuView setBackgroundColor:kRGSubMenuColor];
+                RGFlipSubMenuView *subMenuView = [[RGFlipSubMenuView alloc] initWithFrame:CGRectMake(0, 0, [RGFlipMenuView subMenuWidth], [RGFlipMenuView subMenuHeight]) text:subMenu.menuText actionBlock:subMenu.actionBlock];
+                [_subMenusView addSubview:subMenuView];
+                [_subMenuViews addObject:subMenuView];
+            }
+            if (flipMainMenu.subMenus) {
+                _subMenus = flipMainMenu.subMenus;
             }
             
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapMenu:)];
@@ -237,41 +183,37 @@
 
 
 - (void)didTapMenu:(id)sender {
-//    NSAssert([sender isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu as sender");
-//    RGFlipMenu *flipMenu;
-//
-//    flipMenu.actionBlock();
+    //    NSAssert([sender isKindOfClass:[RGFlipMenu class]], @"expected RGFlipMenu as sender");
+    //    RGFlipMenu *flipMenu;
+    //
+    //    flipMenu.actionBlock();
     
-    if (!self.isSubMenu) {
-        
-        [self toggleStatus];
-        [UIView animateWithDuration:kRGAnimationDuration animations:^{
-            [self positionSubviews];
-        }];
-        
-        BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
-
-        // ... and flip
-        [UIView transitionWithView:self.mainMenuView
-                          duration:kRGAnimationDuration
-                           options:(isLandscape ?
-                                    (self.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
-                                    (self.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop)
-                                    ) | UIViewAnimationOptionAllowAnimatedContent
-                        animations:^{
-                        } completion:NULL];
-        
-        
-        // will be hidden again in completion block (so we see the animation)
-        if (!self.isMenuClosed)
-            [self.subMenusView setHidden:NO];
-
-        
-//            if (self.isMenuClosed) {
-//                [self.subMenusView setHidden:YES];
-//            }
-
-    }
+    [self toggleStatus];
+    [UIView animateWithDuration:kRGAnimationDuration animations:^{
+        [self positionSubviews];
+    }];
+    
+    BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+    
+    // ... and flip
+    [UIView transitionWithView:self.mainMenuView
+                      duration:kRGAnimationDuration
+                       options:(isLandscape ?
+                                (self.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
+                                (self.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop)
+                                ) | UIViewAnimationOptionAllowAnimatedContent
+                    animations:^{
+                    } completion:NULL];
+    
+    
+    // will be hidden again in completion block (so we see the animation)
+    if (!self.isMenuClosed)
+        [self.subMenusView setHidden:NO];
+    
+    
+    //            if (self.isMenuClosed) {
+    //                [self.subMenusView setHidden:YES];
+    //            }
 }
 
 
@@ -279,6 +221,18 @@
     self.isMenuClosed = !self.isMenuClosed;
     [self.menuLabel setHidden:!self.isMenuClosed];
     [self.menuLabelBack setHidden:self.isMenuClosed];
+}
+
+
++ (CGFloat)subMenuWidth {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return 160;
+    else
+        return 110;
+}
+
++ (CGFloat)subMenuHeight {
+    return [RGFlipMenuView subMenuWidth];
 }
 
 
@@ -306,18 +260,6 @@
 + (CGFloat)mainMenuHeight {
     return [RGFlipMenuView mainMenuWidth];
 }
-
-+ (CGFloat)subMenuWidth {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 160;
-    else
-        return 110;
-}
-
-+ (CGFloat)subMenuHeight {
-    return [RGFlipMenuView subMenuWidth];
-}
-
 
 + (CGFloat)mainMenuOffset {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)

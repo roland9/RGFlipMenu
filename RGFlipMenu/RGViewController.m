@@ -8,6 +8,7 @@
 
 #import "RGViewController.h"
 #import "RGFlipMenuView.h"
+#import "RGFlipMenu.h"
 #import <FrameAccessor.h>
 
 
@@ -40,7 +41,7 @@
 #define kRGFMInset 0
 
     self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
-                                            mainMenus:@[flipMenu] isSubMenu:NO];
+                                            mainMenus:@[flipMenu]];
 
     self.menu.center = self.view.middlePoint;
     [self.view addSubview:self.menu];

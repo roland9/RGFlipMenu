@@ -25,6 +25,8 @@
 		AB648765184A8999003208DD /* RGFlipMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AB648764184A8999003208DD /* RGFlipMenuTests.m */; };
 		AB648770184A8A17003208DD /* RGFlipMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = AB64876F184A8A17003208DD /* RGFlipMenuView.m */; };
 		AB648771184A8A17003208DD /* RGFlipMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = AB64876F184A8A17003208DD /* RGFlipMenuView.m */; };
+		ABAA112618C79EEA004A1DD4 /* RGFlipSubMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */; };
+		ABAA112918C79FDB004A1DD4 /* RGFlipMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAA112818C79FDB004A1DD4 /* RGFlipMenu.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +64,10 @@
 		AB648764184A8999003208DD /* RGFlipMenuTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RGFlipMenuTests.m; sourceTree = "<group>"; };
 		AB64876E184A8A17003208DD /* RGFlipMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RGFlipMenuView.h; sourceTree = "<group>"; };
 		AB64876F184A8A17003208DD /* RGFlipMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RGFlipMenuView.m; sourceTree = "<group>"; };
+		ABAA112418C79EEA004A1DD4 /* RGFlipSubMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RGFlipSubMenuView.h; sourceTree = "<group>"; };
+		ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RGFlipSubMenuView.m; sourceTree = "<group>"; };
+		ABAA112718C79FDB004A1DD4 /* RGFlipMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RGFlipMenu.h; sourceTree = "<group>"; };
+		ABAA112818C79FDB004A1DD4 /* RGFlipMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RGFlipMenu.m; sourceTree = "<group>"; };
 		F65AB3DEF3A6479DB389EAF6 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -126,6 +132,10 @@
 		AB64873C184A8998003208DD /* RGFlipMenu */ = {
 			isa = PBXGroup;
 			children = (
+				ABAA112418C79EEA004A1DD4 /* RGFlipSubMenuView.h */,
+				ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */,
+				ABAA112718C79FDB004A1DD4 /* RGFlipMenu.h */,
+				ABAA112818C79FDB004A1DD4 /* RGFlipMenu.m */,
 				AB648745184A8998003208DD /* RGAppDelegate.h */,
 				AB648746184A8998003208DD /* RGAppDelegate.m */,
 				AB64876E184A8A17003208DD /* RGFlipMenuView.h */,
@@ -305,7 +315,9 @@
 			files = (
 				AB648743184A8998003208DD /* main.m in Sources */,
 				AB648747184A8998003208DD /* RGAppDelegate.m in Sources */,
+				ABAA112918C79FDB004A1DD4 /* RGFlipMenu.m in Sources */,
 				AB648750184A8998003208DD /* RGViewController.m in Sources */,
+				ABAA112618C79EEA004A1DD4 /* RGFlipSubMenuView.m in Sources */,
 				AB648770184A8A17003208DD /* RGFlipMenuView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

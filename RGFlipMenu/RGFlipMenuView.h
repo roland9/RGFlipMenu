@@ -8,12 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-//typedef <#existing#> <#new#>;
-
-@interface RGFlipMenu : NSObject
-- (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
-- (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
-@end
+#define kRGMainMenuColor    [UIColor yellowColor]
+#define kRGSubMenuColor     [UIColor greenColor]
 
 
 @interface RGFlipMenuView : UIView
@@ -23,6 +19,6 @@
 - (void)popToRoot;
 - (void)changeText:(NSString *)theText;
 
-- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus isSubMenu:(BOOL)theSubMenuFlag;
+- (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus;
 
 @end
