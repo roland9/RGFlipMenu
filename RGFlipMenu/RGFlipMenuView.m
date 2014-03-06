@@ -72,46 +72,48 @@ CGRect subMenuRect() {
 
     [self.mainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *mainMenu, NSUInteger idx, BOOL *stop) {
 
-        RGFlipMainMenuView *menuView = mainMenu.menuView;
-        NSAssert([menuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
+        RGFlipMainMenuView *mainMenuView = mainMenu.menuView;
+        NSAssert([mainMenuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
         
         if (mainMenu.isMenuClosed) {
             
             // close menu: center main menu & restore size ...
-            menuView.center = self.middlePoint;
-            [menuView.mainMenuView.layer setTransform:CATransform3DIdentity];
+            mainMenuView.center = [RGFlipMenuView mainMenuCenterWithIndex:idx maxMenus:[self.mainMenus count] parentView:self];
+            [mainMenuView.mainMenuWrapperView.layer setTransform:CATransform3DIdentity];
             
             // ... and move back submenus
-            menuView.subMenusView.bounds = menuView.bounds;
-            menuView.subMenusView.center = menuView.middlePoint;
+            mainMenuView.subMenusView.bounds = mainMenuView.bounds;
+            mainMenuView.subMenusView.center = mainMenuView.middlePoint;
             
             [mainMenu.subMenus enumerateObjectsUsingBlock:^(RGFlipMenu *subMenu, NSUInteger idx, BOOL *stop) {
                 NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"inconsistent");
                 RGFlipSubMenuView *subMenuView = subMenu.menuView;
                 NSAssert([subMenuView isKindOfClass:[RGFlipSubMenuView class]], @"inconsistent");
-                subMenuView.center = menuView.subMenusView.middlePoint;
+                subMenuView.center = mainMenuView.subMenusView.middlePoint;
                 subMenuView.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1);
             }];
             
         } else {
             
             // open menu: de-center main menu & shrink it ...
+            mainMenuView.center = self.middlePoint;
+
             if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
-                [menuView.mainMenuWrapperView setCenter:CGPointMake(self.center.x - [RGFlipMenuView mainMenuOffset], self.center.y)];
+                mainMenuView.mainMenuWrapperView.center = CGPointMake(self.center.x - [RGFlipMenuView mainMenuOffset], self.center.y);
             else
-                [menuView.mainMenuWrapperView setCenter:CGPointMake(self.center.x, self.center.y - [RGFlipMenuView mainMenuOffset]) ];
+                mainMenuView.mainMenuWrapperView.center = CGPointMake(self.center.x, self.center.y - [RGFlipMenuView mainMenuOffset]);
             
-            [menuView.mainMenuView.layer setTransform:CATransform3DMakeScale(0.8, 0.8, 1)];
+            [mainMenuView.mainMenuWrapperView.layer setTransform:CATransform3DMakeScale(0.8, 0.8, 1)];
             
             // ... and pop out submenus
-            menuView.subMenusView.frame = self.frame;
-            menuView.subMenusView.center = self.middlePoint;
+            mainMenuView.subMenusView.bounds = self.bounds;
+            mainMenuView.subMenusView.center = mainMenuView.middlePoint;
             
             [mainMenu.subMenus enumerateObjectsUsingBlock:^(RGFlipMenu *subMenu, NSUInteger idx, BOOL *stop) {
                 NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"inconsistent");
                 RGFlipSubMenuView *subMenuView = subMenu.menuView;
                 NSAssert([subMenuView isKindOfClass:[RGFlipSubMenuView class]], @"inconsistent");
-                subMenuView.center = [RGFlipMenuView subMenuCenterWithIndex:idx maxSubMenus:[mainMenu.subMenus count] parentView:menuView.subMenusView];
+                subMenuView.center = [RGFlipMenuView subMenuCenterWithIndex:idx maxSubMenus:[mainMenu.subMenus count] parentView:mainMenuView.subMenusView];
                 subMenuView.layer.transform = CATransform3DIdentity;
             }];
         }
@@ -125,12 +127,17 @@ CGRect subMenuRect() {
 ////////////////////////////////////////////////////////////////////
 # pragma mark - RGFlipMenuDelegate
 
-- (void)didTapMenu:(id)sender {
-    NSLog(@"didTapMenu=%@", sender);
-
-    self.actionBlock();
+- (void)didTapMenu:(RGFlipMainMenuView *)mainMenuView {
+    NSLog(@"didTapMenu=%@", mainMenuView);
+    NSAssert([mainMenuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
+    RGFlipMenu *mainMenu = [self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"menuView=%@", mainMenuView]][0];
+    NSAssert(mainMenu, @"expected to find mainMenu");
+    mainMenu.actionBlock();
     
-    [self toggleStatus];
+    mainMenu.isMenuClosed = !mainMenu.isMenuClosed;
+    [mainMenuView.menuLabel setHidden:!mainMenu.isMenuClosed];
+    [mainMenuView.menuLabelBack setHidden:mainMenu.isMenuClosed];
+
     [UIView animateWithDuration:kRGAnimationDuration animations:^{
         [self positionSubviews];
     }];
@@ -138,22 +145,17 @@ CGRect subMenuRect() {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
     
     // ... and flip
-    [UIView transitionWithView:self.mainMenuView
+    [UIView transitionWithView:mainMenu.menuView
                       duration:kRGAnimationDuration
                        options:(isLandscape ?
-                                (self.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
-                                (self.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop)
+                                (mainMenu.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
+                                (mainMenu.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop)
                                 ) | UIViewAnimationOptionAllowAnimatedContent
                     animations:^{
                     } completion:NULL];
 }
 
 
-- (void)toggleStatus {
-//    self.isMenuClosed = !self.isMenuClosed;
-//    [self.menuLabel setHidden:!self.isMenuClosed];
-//    [self.menuLabelBack setHidden:self.isMenuClosed];
-}
 
 + (CGFloat)subMenuAllOffset {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
@@ -188,5 +190,15 @@ CGRect subMenuRect() {
         return CGPointMake(theParentView.middleX, theParentView.height*0.3 + subMenuRect().size.height/2.f + ( (theParentView.height*0.7f)  / (theMaxSubMenus) * theIndex ));
 }
 
+
++ (CGPoint)mainMenuCenterWithIndex:(NSUInteger)theIndex maxMenus:(NSUInteger)theMaxMenus parentView:(UIView *)theParentView {
+    BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+    
+    if (isLandscape) {
+        return CGPointMake(theParentView.width / theMaxMenus * 0.5f + ( theParentView.width / theMaxMenus * theIndex ), theParentView.middleY);
+        
+    } else
+        return CGPointMake(theParentView.middleX, theParentView.height / theMaxMenus * 0.5f  + ( theParentView.height / theMaxMenus * theIndex ));
+}
 
 @end

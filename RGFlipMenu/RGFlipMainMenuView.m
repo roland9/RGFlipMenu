@@ -15,8 +15,6 @@
 
 @interface RGFlipMainMenuView ()
 
-@property (nonatomic, strong) UILabel *menuLabel;
-@property (nonatomic, strong) UILabel *menuLabelBack;
 @property (nonatomic, weak) id<RGFlipMenuDelegate> delegate;
 
 @end
@@ -35,7 +33,7 @@
         self.backgroundColor = kRGMainMenuColor;
         _delegate = theDelegate;
         
-        // the mainMenuWrapperView is required so that the main Menu move animation is consistent
+        // the mainMenuWrapperView is required so that the main Menu move animation is consistent together with the flipping transition
         _mainMenuWrapperView = [[UIView alloc] initWithFrame:mainMenuRect()];
         [_mainMenuWrapperView setCenter:self.middlePoint];
         [self addSubview:_mainMenuWrapperView];
@@ -89,7 +87,7 @@
 - (void)didTapMenu:(id)sender {
     NSAssert([sender isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent");
     
-    [self.delegate didTapMenu:sender];
+    [self.delegate didTapMenu:self];
 }
 
 @end

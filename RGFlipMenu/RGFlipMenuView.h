@@ -14,8 +14,11 @@
 CGRect mainMenuRect();
 CGRect subMenuRect();
 
+@class RGFlipMainMenuView;
+
+
 @protocol RGFlipMenuDelegate <NSObject>
-- (void)didTapMenu:(id)sender;
+- (void)didTapMenu:(RGFlipMainMenuView *)mainMenuView;
 @end
 
 

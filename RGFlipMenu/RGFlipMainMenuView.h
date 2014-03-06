@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) UIView *mainMenuWrapperView;
 @property (nonatomic, strong) UIView *mainMenuView;
+@property (nonatomic, strong) UILabel *menuLabel;
+@property (nonatomic, strong) UILabel *menuLabelBack;
 @property (nonatomic, strong) UIView *subMenusView;
 
 - (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText subMenus:(NSArray *)theSubMenus delegate:(id<RGFlipMenuDelegate>)delegate;
