@@ -20,6 +20,7 @@
         _menuText = theMenuText;
         _actionBlock = theActionBlock;
         _subMenus = theSubMenus;
+        _isMenuClosed = YES;
     }
     return self;
 }

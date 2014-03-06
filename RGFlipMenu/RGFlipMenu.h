@@ -8,11 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class RGFlipMenuView;
+
 @interface RGFlipMenu : NSObject
 
 @property (nonatomic, copy) NSString *menuText;
-@property (nonatomic, strong) NSArray *subMenus;
 @property (nonatomic, copy) void (^actionBlock) (void);
+@property (nonatomic, strong) NSArray *subMenus;
+@property (nonatomic, assign) BOOL isMenuClosed;
+@property (nonatomic, strong) id menuView;
+
 
 - (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
 - (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;

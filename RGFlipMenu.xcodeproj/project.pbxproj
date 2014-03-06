@@ -27,6 +27,8 @@
 		AB648771184A8A17003208DD /* RGFlipMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = AB64876F184A8A17003208DD /* RGFlipMenuView.m */; };
 		ABAA112618C79EEA004A1DD4 /* RGFlipSubMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */; };
 		ABAA112918C79FDB004A1DD4 /* RGFlipMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = ABAA112818C79FDB004A1DD4 /* RGFlipMenu.m */; };
+		ABEBB43018C8817E007A47AE /* RGFlipMainMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABEBB42F18C8817E007A47AE /* RGFlipMainMenuView.m */; };
+		ABEBB43118C8817E007A47AE /* RGFlipMainMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = ABEBB42F18C8817E007A47AE /* RGFlipMainMenuView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +70,8 @@
 		ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RGFlipSubMenuView.m; sourceTree = "<group>"; };
 		ABAA112718C79FDB004A1DD4 /* RGFlipMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RGFlipMenu.h; sourceTree = "<group>"; };
 		ABAA112818C79FDB004A1DD4 /* RGFlipMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RGFlipMenu.m; sourceTree = "<group>"; };
+		ABEBB42E18C8817E007A47AE /* RGFlipMainMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RGFlipMainMenuView.h; sourceTree = "<group>"; };
+		ABEBB42F18C8817E007A47AE /* RGFlipMainMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RGFlipMainMenuView.m; sourceTree = "<group>"; };
 		F65AB3DEF3A6479DB389EAF6 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -179,10 +183,12 @@
 			children = (
 				ABAA112718C79FDB004A1DD4 /* RGFlipMenu.h */,
 				ABAA112818C79FDB004A1DD4 /* RGFlipMenu.m */,
-				ABAA112418C79EEA004A1DD4 /* RGFlipSubMenuView.h */,
-				ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */,
 				AB64876E184A8A17003208DD /* RGFlipMenuView.h */,
 				AB64876F184A8A17003208DD /* RGFlipMenuView.m */,
+				ABEBB42E18C8817E007A47AE /* RGFlipMainMenuView.h */,
+				ABEBB42F18C8817E007A47AE /* RGFlipMainMenuView.m */,
+				ABAA112418C79EEA004A1DD4 /* RGFlipSubMenuView.h */,
+				ABAA112518C79EEA004A1DD4 /* RGFlipSubMenuView.m */,
 			);
 			name = RGFlipMenu;
 			sourceTree = "<group>";
@@ -324,6 +330,7 @@
 				AB648743184A8998003208DD /* main.m in Sources */,
 				AB648747184A8998003208DD /* RGAppDelegate.m in Sources */,
 				ABAA112918C79FDB004A1DD4 /* RGFlipMenu.m in Sources */,
+				ABEBB43018C8817E007A47AE /* RGFlipMainMenuView.m in Sources */,
 				AB648750184A8998003208DD /* RGViewController.m in Sources */,
 				ABAA112618C79EEA004A1DD4 /* RGFlipSubMenuView.m in Sources */,
 				AB648770184A8A17003208DD /* RGFlipMenuView.m in Sources */,
@@ -335,6 +342,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB648765184A8999003208DD /* RGFlipMenuTests.m in Sources */,
+				ABEBB43118C8817E007A47AE /* RGFlipMainMenuView.m in Sources */,
 				AB648771184A8A17003208DD /* RGFlipMenuView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

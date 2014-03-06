@@ -22,12 +22,12 @@
 {
     [super viewDidLoad];
     
-    RGFlipMenu *flipMenu = [[RGFlipMenu alloc] initWithText:@"Main Menu" actionBlock:^{
+    RGFlipMenu *flipMenu1 = [[RGFlipMenu alloc] initWithText:@"Main Menu 1" actionBlock:^{
         NSLog(@"selected main menu");
     } subMenus:@[
                  [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^{
         NSLog(@"selected sub menu 1");
-                }],
+    }],
                  [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^{
         NSLog(@"selected sub menu 2");
     }],
@@ -35,13 +35,27 @@
         NSLog(@"selected sub menu 3");
     }],
                  ]];
-    
+
+    RGFlipMenu *flipMenu2 = [[RGFlipMenu alloc] initWithText:@"Main Menu 2" actionBlock:^{
+        NSLog(@"selected main menu");
+    } subMenus:@[
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^{
+        NSLog(@"selected sub menu 1");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^{
+        NSLog(@"selected sub menu 2");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^{
+        NSLog(@"selected sub menu 3");
+    }],
+                 ]];
+
 //    RGFlipMenuView *subMenuWithChangingText = [RGFlipMenuView subMenuWithText:@"Sub Menu 3" actionBlock:^{ NSLog(@"selected sub menu 3"); }];
     
 #define kRGFMInset 0
 
     self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
-                                            mainMenus:@[flipMenu]];
+                                            mainMenus:@[flipMenu1, flipMenu2]];
 
     self.menu.center = self.view.middlePoint;
     [self.view addSubview:self.menu];
@@ -62,7 +76,7 @@
     NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent - another gesture recognizer?");
     
 #warning need to verify here that no menu animation is in progress
-    [self.menu popToRoot];
+//    [self.menu popToRoot];
 }
 
 @end

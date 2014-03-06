@@ -27,7 +27,7 @@
     self = [super initWithFrame:frame];
     if (self) {
 
-        self.actionBlock = theActionBlock;
+        _actionBlock = theActionBlock;
         self.backgroundColor = kRGMainMenuColor;
         
         _menuLabel = [[UILabel alloc] initWithFrame:frame];

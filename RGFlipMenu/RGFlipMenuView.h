@@ -11,13 +11,18 @@
 #define kRGMainMenuColor    [UIColor yellowColor]
 #define kRGSubMenuColor     [UIColor greenColor]
 
+CGRect mainMenuRect();
+CGRect subMenuRect();
 
-@interface RGFlipMenuView : UIView
+@protocol RGFlipMenuDelegate <NSObject>
+- (void)didTapMenu:(id)sender;
+@end
 
-@property (nonatomic, readonly) NSString *menuText;
 
-- (void)popToRoot;
-- (void)changeText:(NSString *)theText;
+@interface RGFlipMenuView : UIView <RGFlipMenuDelegate>
+
+//- (void)popToRoot;
+//- (void)changeText:(NSString *)theText;
 
 - (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus;
 
