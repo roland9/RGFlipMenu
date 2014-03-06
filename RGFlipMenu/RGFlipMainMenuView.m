@@ -30,11 +30,11 @@
     self = [super initWithFrame:frame];
     if (self) {
     
-        self.backgroundColor = kRGMainMenuColor;
         _delegate = theDelegate;
         
         // the mainMenuWrapperView is required so that the main Menu move animation is consistent together with the flipping transition
         _mainMenuWrapperView = [[UIView alloc] initWithFrame:mainMenuRect()];
+        _mainMenuWrapperView.backgroundColor = [UIColor greenColor];  // troubleshooting only
         [_mainMenuWrapperView setCenter:self.middlePoint];
         [self addSubview:_mainMenuWrapperView];
 
@@ -63,7 +63,7 @@
         [_mainMenuView addSubview:_menuLabelBack];
         
         _subMenusView = [[UIView alloc] initWithFrame:self.frame];
-            [_subMenusView setBackgroundColor:[UIColor orangeColor]];    // troubleshooting only
+//            [_subMenusView setBackgroundColor:[UIColor orangeColor]];    // troubleshooting only
         [_subMenusView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
         [self insertSubview:_subMenusView belowSubview:_mainMenuWrapperView];
         
