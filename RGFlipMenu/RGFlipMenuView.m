@@ -70,8 +70,12 @@ CGRect subMenuRect() {
 
 - (void)positionSubviews {
 
+    NSUInteger indexOfOpenMenu = 0;
     BOOL isAnyMenuOpen = [[self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"isMenuClosed=NO"]] count];
-    NSLog(@"isAnyMenuOpen=%d", isAnyMenuOpen);
+    if (isAnyMenuOpen) {
+        indexOfOpenMenu = [self.mainMenus indexOfObject:[self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"isMenuClosed=NO"]][0]];
+    }
+    
     
     [self.mainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *mainMenu, NSUInteger idx, BOOL *stop) {
 
@@ -80,7 +84,7 @@ CGRect subMenuRect() {
 
         if (mainMenu.isMenuClosed && isAnyMenuOpen) {
             // another main menu is open -> move this one out of the way
-            mainMenuView.center = [RGFlipMenuView mainMenuCenterOffWithIndex:idx maxMenus:[self.mainMenus count] parentView:self];
+            mainMenuView.center = [RGFlipMenuView mainMenuCenterOffWithIndex:idx maxMenus:[self.mainMenus count] indexOfOpenMenu:indexOfOpenMenu parentView:self];
             
         } else if (mainMenu.isMenuClosed) {
             
@@ -213,18 +217,19 @@ CGRect subMenuRect() {
 }
 
 
-+ (CGPoint)mainMenuCenterOffWithIndex:(NSUInteger)theIndex maxMenus:(NSUInteger)theMaxMenus parentView:(UIView *)theParentView {
++ (CGPoint)mainMenuCenterOffWithIndex:(NSUInteger)theIndex maxMenus:(NSUInteger)theMaxMenus indexOfOpenMenu:(NSUInteger)theIndexOfOpenMenu parentView:(UIView *)theParentView {
+    
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
     
     if (isLandscape) {
-        if (theIndex==0) {
+        if (theIndex<theIndexOfOpenMenu) {
             return CGPointMake(-mainMenuRect().size.width*2.f, theParentView.middleY);
         } else {
             return CGPointMake(theParentView.width + mainMenuRect().size.width*2.f, theParentView.middleY);
         }
         
     } else {
-        if (theIndex==0) {
+        if (theIndex<theIndexOfOpenMenu) {
             return CGPointMake(theParentView.middleX, -mainMenuRect().size.height*2.f);
         } else {
             return CGPointMake(theParentView.middleX, theParentView.height + mainMenuRect().size.height*2.f);
