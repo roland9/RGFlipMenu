@@ -31,12 +31,6 @@
                  [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^{
         NSLog(@"selected sub menu 2");
     }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^{
-        NSLog(@"selected sub menu 3");
-    }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^{
-        NSLog(@"selected sub menu 4");
-    }],
                  ]];
 
     RGFlipMenu *flipMenu2 = [[RGFlipMenu alloc] initWithText:@"Main Menu 2" actionBlock:^{
@@ -50,12 +44,6 @@
     }],
                  [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^{
         NSLog(@"selected sub menu 3");
-    }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^{
-        NSLog(@"selected sub menu 4");
-    }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 5" actionBlock:^{
-        NSLog(@"selected sub menu 5");
     }],
                  ]];
 
@@ -73,12 +61,6 @@
     }],
                  [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^{
         NSLog(@"selected sub menu 4");
-    }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 5" actionBlock:^{
-        NSLog(@"selected sub menu 5");
-    }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 6" actionBlock:^{
-        NSLog(@"selected sub menu 6");
     }],
                  ]];
 
@@ -142,7 +124,7 @@
 #define kRGFMInset 0
 
     self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
-                                            mainMenus:@[flipMenu1, flipMenu2, flipMenu3]];
+                                            mainMenus:@[flipMenu1, flipMenu2, flipMenu3, flipMenu4, flipMenu5]];
 
     self.menu.center = self.view.middlePoint;
     [self.view addSubview:self.menu];

@@ -209,20 +209,20 @@ CGRect subMenuRect() {
     if (theMaxSubMenus<4) {
         
         if (isLandscape) {
-            return CGPointMake(theParentView.width*0.3f + subMenuRect().size.width/2.f + ( (theParentView.width*0.7f)  / (theMaxSubMenus) * theIndex ), theParentView.middleY);
+            return CGPointMake(theParentView.width*0.3f + ( theParentView.width*0.7f / theMaxSubMenus * (theIndex + 0.5f) ), theParentView.middleY);
             
         } else
-            return CGPointMake(theParentView.middleX, theParentView.height*0.3f + subMenuRect().size.height/2.f + ( (theParentView.height*0.7f)  / (theMaxSubMenus) * theIndex ));
+            return CGPointMake(theParentView.middleX, theParentView.height*0.3f + ( theParentView.height*0.7f / theMaxSubMenus * (theIndex + 0.5f) ) );
 
     } else {
     
         if (isLandscape) {
-            return CGPointMake(theParentView.width*0.3f + subMenuRect().size.width/2.f + (theParentView.width*0.7f) / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * (NSUInteger)(theIndex/2),
+            return CGPointMake(theParentView.width*0.3f + theParentView.width*0.7f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * ( (NSUInteger)(theIndex/2) + 0.5f),
                                theIndex%2 ? theParentView.height*0.75f : theParentView.height*0.25f);
-            
+          
         } else {
             return CGPointMake(theIndex%2 ? theParentView.width*0.75f : theParentView.width*0.25f,
-                               theParentView.height*0.3f + subMenuRect().size.height/2.f + theParentView.height*0.7f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * (NSUInteger)(theIndex/2) );
+                               theParentView.height*0.3f + theParentView.height*0.7f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * ( (NSUInteger)(theIndex/2) + 0.5f) );
         }
     }
 }
