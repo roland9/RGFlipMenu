@@ -179,15 +179,15 @@ CGRect mainMenuRect() {
     [openMainMenuView.menuLabel setHidden:!mainMenu.isMenuClosed];
     [openMainMenuView.menuLabelBack setHidden:mainMenu.isMenuClosed];
 
-    [UIView animateWithDuration:kRGAnimationDuration animations:^{
+    [UIView animateWithDuration:kRGAnimationDuration delay:0.f usingSpringWithDamping:0.7f initialSpringVelocity:0.4f options:0 animations:^{
         [self positionSubviews];
-    }];
+    } completion:NULL];
     
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
     
     // ... and flip
     [UIView transitionWithView:openMainMenuView.mainMenuWrapperView.subviews[0]
-                      duration:kRGAnimationDuration
+                      duration:kRGAnimationDuration*0.6f
                        options:(isLandscape ?
                                 (mainMenu.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
                                 (mainMenu.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromBottom : UIViewAnimationOptionTransitionFlipFromTop)
