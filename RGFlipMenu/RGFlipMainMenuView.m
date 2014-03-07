@@ -49,6 +49,7 @@ CGRect subMenuRect(NSUInteger maxCount) {
         _mainMenuView.center = _mainMenuWrapperView.middlePoint;
         [_mainMenuView setBackgroundColor:kRGMainMenuColor];
         [_mainMenuView addSubview:_menuLabel];
+        [_mainMenuView.layer setCornerRadius:5.f];
         [_mainMenuWrapperView addSubview:_mainMenuView];
         
         _menuLabel = [[UILabel alloc] initWithFrame:frame];

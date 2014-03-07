@@ -32,6 +32,8 @@
         self.backgroundColor = kRGMainMenuColor;
         _delegate = theDelegate;
         
+        [self.layer setCornerRadius:5.f];
+        
         _menuLabel = [[UILabel alloc] initWithFrame:frame];
         [_menuLabel setText:theMenuText];
         [_menuLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
