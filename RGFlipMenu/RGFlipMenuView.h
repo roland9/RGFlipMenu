@@ -12,7 +12,6 @@
 #define kRGSubMenuColor     [UIColor greenColor]
 
 CGRect mainMenuRect();
-CGRect subMenuRect();
 
 @class RGFlipMainMenuView;
 

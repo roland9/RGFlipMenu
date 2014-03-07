@@ -13,6 +13,13 @@
 #import <FrameAccessor.h>
 
 
+CGRect subMenuRect(NSUInteger maxCount) {
+    CGFloat factor = maxCount < 5 ? 1.f : 6.f/maxCount;
+    CGFloat width = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 160*factor : 110*factor;
+    return CGRectMake(0, 0, width, width);
+}
+
+
 @interface RGFlipMainMenuView ()
 
 @property (nonatomic, weak) id<RGFlipMenuDelegate> delegate;
@@ -70,7 +77,7 @@
         for (RGFlipMenu *subMenu in theSubMenus) {
             NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
             
-            RGFlipSubMenuView *subMenuView = [[RGFlipSubMenuView alloc] initWithFrame:subMenuRect() text:subMenu.menuText actionBlock:subMenu.actionBlock];
+            RGFlipSubMenuView *subMenuView = [[RGFlipSubMenuView alloc] initWithFrame:subMenuRect([theSubMenus count]) text:subMenu.menuText actionBlock:subMenu.actionBlock];
             [_subMenusView addSubview:subMenuView];
             subMenu.menuView = subMenuView;
         }

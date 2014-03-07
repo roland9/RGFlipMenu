@@ -17,11 +17,6 @@ CGRect mainMenuRect() {
     return CGRectMake(0, 0, UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 180 : 120, UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 180 : 120);
 }
 
-CGRect subMenuRect() {
-    return CGRectMake(0, 0, UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 160 : 110, UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 160 : 110);
-}
-
-
 @interface RGFlipMenuView ()
 
 @property (nonatomic, strong) NSArray *mainMenus;
