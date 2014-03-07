@@ -45,7 +45,7 @@ CGRect mainMenuRect() {
     if (self) {
         _mainMenus = theMainMenus;
         
-                self.backgroundColor = [UIColor lightGrayColor];    // troubleshooting only
+//                self.backgroundColor = [UIColor lightGrayColor];    // troubleshooting only
         [self setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
         self.autoresizesSubviews = YES;
         
