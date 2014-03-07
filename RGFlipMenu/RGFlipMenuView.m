@@ -158,7 +158,9 @@ CGRect mainMenuRect() {
         NSAssert([mainMenuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
         mainMenu = [self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"menuView=%@", mainMenuView]][0];
         NSAssert(mainMenu, @"expected to find mainMenu");
-        mainMenu.actionBlock(self);
+        if (mainMenu.actionBlock) {
+            mainMenu.actionBlock(self);
+        }
         mainMenu.isMenuClosed = !mainMenu.isMenuClosed;
         openMainMenuView = mainMenuView;
         
@@ -205,7 +207,10 @@ CGRect mainMenuRect() {
     NSAssert(subMenu, @"expected to find subMenu");
     NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"inconsistent");
     
-    subMenu.actionBlock(mainMenu);
+    if (subMenu.actionBlock) {
+        subMenu.actionBlock(mainMenu);
+    }
+
     [self setNeedsLayout];
 }
 
