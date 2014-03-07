@@ -133,6 +133,12 @@ CGRect mainMenuRect() {
                 NSAssert([subMenuView isKindOfClass:[RGFlipSubMenuView class]], @"inconsistent");
                 subMenuView.center = [RGFlipMenuView subMenuCenterWithIndex:idx maxSubMenus:[mainMenu.subMenus count] parentView:mainMenuView.subMenusView];
                 subMenuView.layer.transform = CATransform3DIdentity;
+                
+                if (subMenu.isMenuSelected)
+                    subMenuView.backgroundColor = kRGSubMenuSelectedColor;
+                else
+                    subMenuView.backgroundColor = kRGSubMenuNormalColor;
+
             }];
         }
         
@@ -146,11 +152,10 @@ CGRect mainMenuRect() {
 # pragma mark - RGFlipMenuDelegate
 
 - (void)didTapMenu:(RGFlipMainMenuView *)mainMenuView {
-    NSLog(@"didTapMenu=%@", mainMenuView);
     NSAssert([mainMenuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
     RGFlipMenu *mainMenu = [self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"menuView=%@", mainMenuView]][0];
     NSAssert(mainMenu, @"expected to find mainMenu");
-    mainMenu.actionBlock();
+    mainMenu.actionBlock(self);
     
     mainMenu.isMenuClosed = !mainMenu.isMenuClosed;
     [mainMenuView.menuLabel setHidden:!mainMenu.isMenuClosed];
@@ -173,6 +178,21 @@ CGRect mainMenuRect() {
                     } completion:NULL];
 }
 
+
+- (void)didTapSubMenu:(RGFlipSubMenuView *)subMenuView {
+    NSAssert([subMenuView isKindOfClass:[RGFlipSubMenuView class]], @"inconsistent");
+    RGFlipMenu *mainMenu = [self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"subMenus.menuView CONTAINS %@", subMenuView]][0];
+    NSAssert(mainMenu, @"expected to find mainMenu");
+    NSAssert([mainMenu isKindOfClass:[RGFlipMenu class]], @"inconsistent");
+    
+    RGFlipMenu *subMenu = [mainMenu.subMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"menuView=%@", subMenuView]][0];
+    NSAssert(subMenu, @"expected to find subMenu");
+    NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"inconsistent");
+    
+    subMenu.actionBlock(subMenu);
+//    subMenu.isMenuSelected = YES;
+    [self setNeedsLayout];
+}
 
 
 + (CGFloat)subMenuAllOffset {

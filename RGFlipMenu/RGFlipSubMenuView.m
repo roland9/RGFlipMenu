@@ -7,20 +7,21 @@
 //
 
 #import "RGFlipSubMenuView.h"
-#import "RGFlipMenu.h"
 #import "RGFlipMenuView.h"
 
 @interface RGFlipSubMenuView ()
 
 @property (nonatomic, strong) UILabel *menuLabel;
-@property (nonatomic, copy) void (^actionBlock) (void);
+@property (nonatomic, copy) RGFlipMenuActionBlock actionBlock;
+
+@property (nonatomic, weak) id<RGFlipMenuDelegate> delegate;
 
 @end
 
 
 @implementation RGFlipSubMenuView
 
-- (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock {
+- (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText actionBlock:(RGFlipMenuActionBlock)theActionBlock delegate:(id<RGFlipMenuDelegate>)theDelegate {
     NSAssert(theMenuText, @"menuText is mandatory");
     NSAssert(theActionBlock, @"actionBlock block is mandatory");
 
@@ -29,6 +30,7 @@
 
         _actionBlock = theActionBlock;
         self.backgroundColor = kRGMainMenuColor;
+        _delegate = theDelegate;
         
         _menuLabel = [[UILabel alloc] initWithFrame:frame];
         [_menuLabel setText:theMenuText];
@@ -48,7 +50,7 @@
 - (void)didTapMenu:(id)sender {
     NSAssert([sender isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent");
     
-    self.actionBlock();
+    [self.delegate didTapSubMenu:self];
 }
 
 

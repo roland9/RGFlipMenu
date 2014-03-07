@@ -8,16 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
-#define kRGMainMenuColor    [UIColor yellowColor]
-#define kRGSubMenuColor     [UIColor greenColor]
+#define kRGMainMenuColor        [UIColor yellowColor]
+#define kRGSubMenuNormalColor   [UIColor greenColor]
+#define kRGSubMenuSelectedColor [UIColor cyanColor]
 
 CGRect mainMenuRect();
 
 @class RGFlipMainMenuView;
-
+@class RGFlipSubMenuView;
 
 @protocol RGFlipMenuDelegate <NSObject>
 - (void)didTapMenu:(RGFlipMainMenuView *)mainMenuView;
+- (void)didTapSubMenu:(RGFlipSubMenuView *)subMenuView;
 @end
 
 

@@ -7,9 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RGFlipMenu.h"
+#import "RGFlipMenuView.h"
+
 
 @interface RGFlipSubMenuView : UIView
 
-- (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
+- (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText actionBlock:(RGFlipMenuActionBlock)theActionBlock delegate:(id<RGFlipMenuDelegate>)theDelegate;
 
 @end

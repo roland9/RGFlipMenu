@@ -77,7 +77,7 @@ CGRect subMenuRect(NSUInteger maxCount) {
         for (RGFlipMenu *subMenu in theSubMenus) {
             NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"expected instance RGFlipMenu class in subMenu array");
             
-            RGFlipSubMenuView *subMenuView = [[RGFlipSubMenuView alloc] initWithFrame:subMenuRect([theSubMenus count]) text:subMenu.menuText actionBlock:subMenu.actionBlock];
+            RGFlipSubMenuView *subMenuView = [[RGFlipSubMenuView alloc] initWithFrame:subMenuRect([theSubMenus count]) text:subMenu.menuText actionBlock:subMenu.actionBlock delegate:theDelegate];
             [_subMenusView addSubview:subMenuView];
             subMenu.menuView = subMenuView;
         }
