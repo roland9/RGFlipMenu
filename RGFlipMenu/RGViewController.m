@@ -163,7 +163,7 @@
     NSAssert([tap isKindOfClass:[UITapGestureRecognizer class]], @"inconsistent - another gesture recognizer?");
     
 #warning need to verify here that no menu animation is in progress
-//    [self.menu popToRoot];
+    [self.menu popToRoot];
 }
 
 @end

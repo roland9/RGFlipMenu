@@ -26,14 +26,14 @@ CGRect mainMenuRect() {
 
 @implementation RGFlipMenuView
 
+#define kRGAnimationDuration 0.4f
+
+
 ////////////////////////////////////////////////////////////////////
 # pragma mark - Public methods
 
 - (void)popToRoot {
-    [self.mainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *menu, NSUInteger idx, BOOL *stop) {
-        menu.isMenuClosed = YES;
-    }];
-    [self positionSubviews];
+    [self didTapMenu:nil];
 }
 
 
@@ -145,21 +145,37 @@ CGRect mainMenuRect() {
     }];
 }
 
-#define kRGAnimationDuration 0.4f
-
 
 ////////////////////////////////////////////////////////////////////
 # pragma mark - RGFlipMenuDelegate
 
 - (void)didTapMenu:(RGFlipMainMenuView *)mainMenuView {
-    NSAssert([mainMenuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
-    RGFlipMenu *mainMenu = [self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"menuView=%@", mainMenuView]][0];
-    NSAssert(mainMenu, @"expected to find mainMenu");
-    mainMenu.actionBlock(self);
     
-    mainMenu.isMenuClosed = !mainMenu.isMenuClosed;
-    [mainMenuView.menuLabel setHidden:!mainMenu.isMenuClosed];
-    [mainMenuView.menuLabelBack setHidden:mainMenu.isMenuClosed];
+    __block RGFlipMenu *mainMenu;
+    __block RGFlipMainMenuView *openMainMenuView;
+    
+    if (mainMenuView) {
+        NSAssert([mainMenuView isKindOfClass:[RGFlipMainMenuView class]], @"inconsistent");
+        mainMenu = [self.mainMenus filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"menuView=%@", mainMenuView]][0];
+        NSAssert(mainMenu, @"expected to find mainMenu");
+        mainMenu.actionBlock(self);
+        mainMenu.isMenuClosed = !mainMenu.isMenuClosed;
+        openMainMenuView = mainMenuView;
+        
+    } else {
+        // user tapped outside the menu -> close whatever menu is open
+        [self.mainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *menu, NSUInteger idx, BOOL *stop) {
+            if (menu.isMenuClosed == NO) {
+                menu.isMenuClosed = YES;
+                mainMenu = menu;
+                openMainMenuView = mainMenu.menuView;
+                *stop = YES;
+            }
+        }];
+    }
+    
+    [openMainMenuView.menuLabel setHidden:!mainMenu.isMenuClosed];
+    [openMainMenuView.menuLabelBack setHidden:mainMenu.isMenuClosed];
 
     [UIView animateWithDuration:kRGAnimationDuration animations:^{
         [self positionSubviews];
