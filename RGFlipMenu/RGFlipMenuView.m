@@ -26,7 +26,7 @@ CGRect mainMenuRect() {
 
 @implementation RGFlipMenuView
 
-#define kRGAnimationDuration 4.4f
+#define kRGAnimationDuration 1.4f
 
 
 ////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ CGRect mainMenuRect() {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
     
     // ... and flip
-    [UIView transitionWithView:mainMenu.menuView
+    [UIView transitionWithView:openMainMenuView.mainMenuWrapperView.subviews[0]
                       duration:kRGAnimationDuration
                        options:(isLandscape ?
                                 (mainMenu.isMenuClosed ? UIViewAnimationOptionTransitionFlipFromLeft : UIViewAnimationOptionTransitionFlipFromRight) :
