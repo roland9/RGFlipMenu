@@ -117,9 +117,9 @@ CGRect mainMenuRect() {
             
             // de-center main menu & shrink it ...
             if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
-                mainMenuView.mainMenuWrapperView.center = CGPointMake(mainMenuView.centerX - [RGFlipMenuView mainMenuOffset], mainMenuView.centerY);
+                mainMenuView.mainMenuWrapperView.center = CGPointMake(mainMenuView.width * 0.15f, mainMenuView.centerY);
             else
-                mainMenuView.mainMenuWrapperView.center = CGPointMake(mainMenuView.centerX, mainMenuView.centerY - [RGFlipMenuView mainMenuOffset]);
+                mainMenuView.mainMenuWrapperView.center = CGPointMake(mainMenuView.centerX, mainMenuView.height * 0.15f);
             
             [mainMenuView.mainMenuWrapperView.layer setTransform:CATransform3DMakeScale(0.8, 0.8, 1)];
             
@@ -215,49 +215,26 @@ CGRect mainMenuRect() {
 }
 
 
-+ (CGFloat)subMenuAllOffset {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 50;
-    else
-        return 60;
-}
-
-+ (CGFloat)subMenuOffset {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 180;
-    else
-        return 120;
-}
-
-
-+ (CGFloat)mainMenuOffset {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return 250;
-    else
-        return 200;
-}
-
-
 + (CGPoint)subMenuCenterWithIndex:(NSUInteger)theIndex maxSubMenus:(NSUInteger)theMaxSubMenus parentView:(UIView *)theParentView {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
     if (theMaxSubMenus<4) {
         
         if (isLandscape) {
-            return CGPointMake(theParentView.width*0.3f + ( theParentView.width*0.7f / theMaxSubMenus * (theIndex + 0.5f) ), theParentView.middleY);
+            return CGPointMake(theParentView.width*0.25f + ( theParentView.width*0.75f / theMaxSubMenus * (theIndex + 0.5f) ), theParentView.middleY);
             
         } else
-            return CGPointMake(theParentView.middleX, theParentView.height*0.3f + ( theParentView.height*0.7f / theMaxSubMenus * (theIndex + 0.5f) ) );
+            return CGPointMake(theParentView.middleX, theParentView.height*0.25f + ( theParentView.height*0.75f / theMaxSubMenus * (theIndex + 0.5f) ) );
 
     } else {
     
         if (isLandscape) {
-            return CGPointMake(theParentView.width*0.3f + theParentView.width*0.7f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * ( (NSUInteger)(theIndex/2) + 0.5f),
+            return CGPointMake(theParentView.width*0.25f + theParentView.width*0.75f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * ( (NSUInteger)(theIndex/2) + 0.5f),
                                theIndex%2 ? theParentView.height*0.75f : theParentView.height*0.25f);
           
         } else {
             return CGPointMake(theIndex%2 ? theParentView.width*0.75f : theParentView.width*0.25f,
-                               theParentView.height*0.3f + theParentView.height*0.7f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * ( (NSUInteger)(theIndex/2) + 0.5f) );
+                               theParentView.height*0.25f + theParentView.height*0.75f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * ( (NSUInteger)(theIndex/2) + 0.5f) );
         }
     }
 }
