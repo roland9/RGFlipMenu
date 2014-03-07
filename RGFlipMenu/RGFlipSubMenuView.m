@@ -21,6 +21,11 @@
 
 @implementation RGFlipSubMenuView
 
+- (void)changeMenuText:(NSString *)theMenuText {
+    self.menuLabel.text = theMenuText;
+}
+
+
 - (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText actionBlock:(RGFlipMenuActionBlock)theActionBlock delegate:(id<RGFlipMenuDelegate>)theDelegate {
     NSAssert(theMenuText, @"menuText is mandatory");
     NSAssert(theActionBlock, @"actionBlock block is mandatory");

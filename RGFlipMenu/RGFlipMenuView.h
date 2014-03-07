@@ -26,7 +26,6 @@ CGRect mainMenuRect();
 @interface RGFlipMenuView : UIView <RGFlipMenuDelegate>
 
 - (void)popToRoot;
-//- (void)changeText:(NSString *)theText;
 
 - (id)initWithFrame:(CGRect)theFrame mainMenus:(NSArray *)theMainMenus;
 

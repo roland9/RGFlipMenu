@@ -13,6 +13,8 @@
 
 @interface RGFlipSubMenuView : UIView
 
+- (void)changeMenuText:(NSString *)theMenuText;
+
 - (id)initWithFrame:(CGRect)frame text:(NSString *)theMenuText actionBlock:(RGFlipMenuActionBlock)theActionBlock delegate:(id<RGFlipMenuDelegate>)theDelegate;
 
 @end

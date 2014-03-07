@@ -28,7 +28,7 @@
         NSLog(@"selected sub menu 1");
         parentMenu.selectedSubMenuIndex = 0;
     }];
-    RGFlipMenu *subMenu1_2 = [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
+    RGFlipMenu *subMenu1_2 = [[RGFlipMenu alloc] initWithText:@"Old Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
         NSLog(@"selected sub menu 2");
         parentMenu.selectedSubMenuIndex = 1;
     }];
@@ -39,9 +39,16 @@
                  subMenu1_1,
                  subMenu1_2,
                  ]];
-
+    // pre-select the second submenu item
     flipMenu1.selectedSubMenuIndex = 1;
     
+    // after delay, change the text of one submenu
+    double delayInSeconds = 3.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [subMenu1_2 changeMenuText:@"Tap me!"];
+    });
+
     RGFlipMenu *flipMenu2 = [[RGFlipMenu alloc] initWithText:@"Main Menu 2" actionBlock:^(id me) {
         NSLog(@"selected main menu");
     } subMenus:@[
@@ -131,8 +138,6 @@
     }],
                  ]];
 
-//    RGFlipMenuView *subMenuWithChangingText = [RGFlipMenuView subMenuWithText:@"Sub Menu 3" actionBlock:^{ NSLog(@"selected sub menu 3"); }];
-    
 #define kRGFMInset 0
 
     self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
@@ -145,13 +150,6 @@
     
     UITapGestureRecognizer *tapOutsideMenu = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapOutsideMenu:)];
     [self.view addGestureRecognizer:tapOutsideMenu];
-    
-    // after delay, change the text of one submenu
-//    double delayInSeconds = 3.0;
-//    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-//    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-//        [subMenuWithChangingText changeText:@"Tap me!"];
-//    });
 }
 
 
