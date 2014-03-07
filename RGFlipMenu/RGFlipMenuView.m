@@ -11,7 +11,7 @@
 #import "RGFlipSubMenuView.h"
 #import "RGFlipMenu.h"
 #import <FrameAccessor.h>
-
+#import <math.h>
 
 CGRect mainMenuRect() {
     return CGRectMake(0, 0, UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 180 : 120, UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 180 : 120);
@@ -33,6 +33,14 @@ CGRect subMenuRect() {
 
 ////////////////////////////////////////////////////////////////////
 # pragma mark - Public methods
+
+- (void)popToRoot {
+    [self.mainMenus enumerateObjectsUsingBlock:^(RGFlipMenu *menu, NSUInteger idx, BOOL *stop) {
+        menu.isMenuClosed = YES;
+    }];
+    [self positionSubviews];
+}
+
 
 ////////////////////////////////////////////////////////////////////
 # pragma mark - designated initializer
@@ -198,22 +206,50 @@ CGRect subMenuRect() {
 + (CGPoint)subMenuCenterWithIndex:(NSUInteger)theIndex maxSubMenus:(NSUInteger)theMaxSubMenus parentView:(UIView *)theParentView {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
 
-    if (isLandscape) {
-        return CGPointMake(theParentView.width*0.3 + subMenuRect().size.width/2.f + ( (theParentView.width*0.7f)  / (theMaxSubMenus) * theIndex ), theParentView.middleY);
+    if (theMaxSubMenus<4) {
+        if (isLandscape) {
+            return CGPointMake(theParentView.width*0.3f + subMenuRect().size.width/2.f + ( (theParentView.width*0.7f)  / (theMaxSubMenus) * theIndex ), theParentView.middleY);
+            
+        } else
+            return CGPointMake(theParentView.middleX, theParentView.height*0.3f + subMenuRect().size.height/2.f + ( (theParentView.height*0.7f)  / (theMaxSubMenus) * theIndex ));
 
-    } else
-        return CGPointMake(theParentView.middleX, theParentView.height*0.3 + subMenuRect().size.height/2.f + ( (theParentView.height*0.7f)  / (theMaxSubMenus) * theIndex ));
+    } else {
+    
+        if (isLandscape) {
+            return CGPointMake(theParentView.width*0.3f + subMenuRect().size.width/2.f + (theParentView.width*0.7f) / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * (NSUInteger)(theIndex/2),
+                               theIndex%2 ? theParentView.height*0.75f : theParentView.height*0.25f);
+            
+        } else {
+            return CGPointMake(theIndex%2 ? theParentView.width*0.75f : theParentView.width*0.25f,
+                               theParentView.height*0.3f + subMenuRect().size.height/2.f + theParentView.height*0.7f / (NSUInteger)(ceil(theMaxSubMenus/2.f)) * (NSUInteger)(theIndex/2) );
+        }
+    }
 }
 
 
 + (CGPoint)mainMenuCenterWithIndex:(NSUInteger)theIndex maxMenus:(NSUInteger)theMaxMenus parentView:(UIView *)theParentView {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
     
-    if (isLandscape) {
-        return CGPointMake(theParentView.width / theMaxMenus * 0.5f + ( theParentView.width / theMaxMenus * theIndex ), theParentView.middleY);
+    if (theMaxMenus<4) {
         
-    } else
-        return CGPointMake(theParentView.middleX, theParentView.height / theMaxMenus * 0.5f  + ( theParentView.height / theMaxMenus * theIndex ));
+        if (isLandscape) {
+            return CGPointMake(theParentView.width / theMaxMenus * 0.5f + ( theParentView.width / theMaxMenus * theIndex ), theParentView.middleY);
+            
+        } else
+            return CGPointMake(theParentView.middleX, theParentView.height / theMaxMenus * 0.5f  + ( theParentView.height / theMaxMenus * theIndex ));
+        
+    } else {
+        
+        if (isLandscape) {
+            return CGPointMake(theParentView.width / (NSUInteger)(ceil(theMaxMenus/2.f)) * 0.5f + theParentView.width / (NSUInteger)(ceil(theMaxMenus/2.f)) * (NSUInteger)(theIndex/2),
+                               theIndex%2 ? theParentView.height*0.75f : theParentView.height*0.25f);
+            
+        } else {
+            return CGPointMake(theIndex%2 ? theParentView.width*0.75f : theParentView.width*0.25f,
+                               theParentView.height / (NSUInteger)(ceil(theMaxMenus/2.f)) * 0.5f + theParentView.height / (NSUInteger)(ceil(theMaxMenus/2.f)) * (NSUInteger)(theIndex/2) );
+            
+        }
+    }
 }
 
 

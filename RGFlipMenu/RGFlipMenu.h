@@ -18,7 +18,6 @@
 @property (nonatomic, assign) BOOL isMenuClosed;
 @property (nonatomic, strong) id menuView;
 
-
 - (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock subMenus:(NSArray *)theSubMenus;
 - (id)initWithText:(NSString *)theMenuText actionBlock:(void (^)(void))theActionBlock;
 
