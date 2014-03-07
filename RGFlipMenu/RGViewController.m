@@ -24,23 +24,14 @@
 {
     [super viewDidLoad];
     
-    selectedSubMenu1Index = 1;
-    
-    RGFlipMenu *subMenu1_1 = [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(id me) {
+    RGFlipMenu *subMenu1_1 = [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(RGFlipMenu *parentMenu) {
         NSLog(@"selected sub menu 1");
-        selectedSubMenu1Index = 0;
-        RGFlipMenu *flipMenu = (RGFlipMenu *)me;
-        flipMenu.isMenuSelected = !flipMenu.isMenuSelected;
+        parentMenu.selectedSubMenuIndex = 0;
     }];
-    RGFlipMenu *subMenu1_2 = [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(id me) {
+    RGFlipMenu *subMenu1_2 = [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
         NSLog(@"selected sub menu 2");
-        selectedSubMenu1Index = 1;
-        RGFlipMenu *flipMenu = (RGFlipMenu *)me;
-        flipMenu.isMenuSelected = !flipMenu.isMenuSelected;
+        parentMenu.selectedSubMenuIndex = 1;
     }];
-    
-    subMenu1_1.isMenuSelected = selectedSubMenu1Index==0;
-    subMenu1_2.isMenuSelected = selectedSubMenu1Index==1;
     
     RGFlipMenu *flipMenu1 = [[RGFlipMenu alloc] initWithText:@"Main Menu 1" actionBlock:^(id me) {
         NSLog(@"selected main menu");
@@ -49,91 +40,96 @@
                  subMenu1_2,
                  ]];
 
+    flipMenu1.selectedSubMenuIndex = 1;
+    
     RGFlipMenu *flipMenu2 = [[RGFlipMenu alloc] initWithText:@"Main Menu 2" actionBlock:^(id me) {
         NSLog(@"selected main menu");
     } subMenus:@[
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(id me) {
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(RGFlipMenu *parentMenu) {
         NSLog(@"selected sub menu 1");
+        parentMenu.selectedSubMenuIndex = 0;
     }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(id me) {
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
         NSLog(@"selected sub menu 2");
+        parentMenu.selectedSubMenuIndex = 1;
     }],
-                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^(id me) {
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^(RGFlipMenu *parentMenu) {
         NSLog(@"selected sub menu 3");
+        parentMenu.selectedSubMenuIndex = 2;
     }],
                  ]];
 
-//    RGFlipMenu *flipMenu3 = [[RGFlipMenu alloc] initWithText:@"Main Menu 3" actionBlock:^{
-//        NSLog(@"selected main menu");
-//    } subMenus:@[
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^{
-//        NSLog(@"selected sub menu 1");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^{
-//        NSLog(@"selected sub menu 2");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^{
-//        NSLog(@"selected sub menu 3");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^{
-//        NSLog(@"selected sub menu 4");
-//    }],
-//                 ]];
-//
-//    RGFlipMenu *flipMenu4 = [[RGFlipMenu alloc] initWithText:@"Main Menu 4" actionBlock:^{
-//        NSLog(@"selected main menu");
-//    } subMenus:@[
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^{
-//        NSLog(@"selected sub menu 1");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^{
-//        NSLog(@"selected sub menu 2");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^{
-//        NSLog(@"selected sub menu 3");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^{
-//        NSLog(@"selected sub menu 4");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 5" actionBlock:^{
-//        NSLog(@"selected sub menu 5");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 6" actionBlock:^{
-//        NSLog(@"selected sub menu 6");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 7" actionBlock:^{
-//        NSLog(@"selected sub menu 7");
-//    }],
-//                 ]];
-//    
-//    RGFlipMenu *flipMenu5 = [[RGFlipMenu alloc] initWithText:@"Main Menu 5" actionBlock:^{
-//        NSLog(@"selected main menu");
-//    } subMenus:@[
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^{
-//        NSLog(@"selected sub menu 1");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^{
-//        NSLog(@"selected sub menu 2");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^{
-//        NSLog(@"selected sub menu 3");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^{
-//        NSLog(@"selected sub menu 4");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 5" actionBlock:^{
-//        NSLog(@"selected sub menu 5");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 6" actionBlock:^{
-//        NSLog(@"selected sub menu 6");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 7" actionBlock:^{
-//        NSLog(@"selected sub menu 7");
-//    }],
-//                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 8" actionBlock:^{
-//        NSLog(@"selected sub menu 8");
-//    }],
-//                 ]];
+    RGFlipMenu *flipMenu3 = [[RGFlipMenu alloc] initWithText:@"Main Menu 3" actionBlock:^(id me) {
+        NSLog(@"selected main menu");
+    } subMenus:@[
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 1");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 2");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 3");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 4");
+    }],
+                 ]];
+
+    RGFlipMenu *flipMenu4 = [[RGFlipMenu alloc] initWithText:@"Main Menu 4" actionBlock:^(id me) {
+        NSLog(@"selected main menu");
+    } subMenus:@[
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 1");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 2");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 3");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 4");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 5" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 5");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 6" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 6");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 7" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 7");
+    }],
+                 ]];
+    
+    RGFlipMenu *flipMenu5 = [[RGFlipMenu alloc] initWithText:@"Main Menu 5" actionBlock:^(id me) {
+        NSLog(@"selected main menu");
+    } subMenus:@[
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 1" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 1");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 2" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 2");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 3" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 3");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 4" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 4");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 5" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 5");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 6" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 6");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 7" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 7");
+    }],
+                 [[RGFlipMenu alloc] initWithText:@"Sub Menu 8" actionBlock:^(RGFlipMenu *parentMenu) {
+        NSLog(@"selected sub menu 8");
+    }],
+                 ]];
 
 //    RGFlipMenuView *subMenuWithChangingText = [RGFlipMenuView subMenuWithText:@"Sub Menu 3" actionBlock:^{ NSLog(@"selected sub menu 3"); }];
     
@@ -141,7 +137,7 @@
 
     self.menu = [[RGFlipMenuView alloc] initWithFrame:CGRectMake(kRGFMInset, kRGFMInset, self.view.width-2*kRGFMInset, self.view.height-2*kRGFMInset)
                                             mainMenus:@[flipMenu1, flipMenu2,
-//                                                        flipMenu3, flipMenu4, flipMenu5
+                                                        flipMenu3, flipMenu4, flipMenu5
                                                         ]];
 
     self.menu.center = self.view.middlePoint;

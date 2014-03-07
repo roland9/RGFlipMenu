@@ -21,7 +21,7 @@
         _actionBlock = theActionBlock;
         _subMenus = theSubMenus;
         _isMenuClosed = YES;
-        _isMenuSelected = NO;
+        _selectedSubMenuIndex = NSUIntegerMax;
     }
     return self;
 }

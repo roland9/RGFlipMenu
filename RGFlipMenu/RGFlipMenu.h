@@ -19,8 +19,8 @@ typedef void (^RGFlipMenuActionBlock)(id me);
 @property (nonatomic, copy) RGFlipMenuActionBlock actionBlock;
 @property (nonatomic, strong) NSArray *subMenus;
 @property (nonatomic, assign) BOOL isMenuClosed;
-@property (nonatomic, assign) BOOL isMenuSelected;
 @property (nonatomic, strong) id menuView;
+@property (nonatomic, assign) NSUInteger selectedSubMenuIndex;
 
 - (id)initWithText:(NSString *)theMenuText actionBlock:(RGFlipMenuActionBlock)theActionBlock subMenus:(NSArray *)theSubMenus;
 - (id)initWithText:(NSString *)theMenuText actionBlock:(RGFlipMenuActionBlock)theActionBlock;

@@ -26,7 +26,7 @@ CGRect mainMenuRect() {
 
 @implementation RGFlipMenuView
 
-#define kRGAnimationDuration 0.4f
+#define kRGAnimationDuration 4.4f
 
 
 ////////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ CGRect mainMenuRect() {
                 subMenuView.center = [RGFlipMenuView subMenuCenterWithIndex:idx maxSubMenus:[mainMenu.subMenus count] parentView:mainMenuView.subMenusView];
                 subMenuView.layer.transform = CATransform3DIdentity;
                 
-                if (subMenu.isMenuSelected)
+                if (mainMenu.selectedSubMenuIndex == idx)
                     subMenuView.backgroundColor = kRGSubMenuSelectedColor;
                 else
                     subMenuView.backgroundColor = kRGSubMenuNormalColor;
@@ -205,8 +205,7 @@ CGRect mainMenuRect() {
     NSAssert(subMenu, @"expected to find subMenu");
     NSAssert([subMenu isKindOfClass:[RGFlipMenu class]], @"inconsistent");
     
-    subMenu.actionBlock(subMenu);
-//    subMenu.isMenuSelected = YES;
+    subMenu.actionBlock(mainMenu);
     [self setNeedsLayout];
 }
 

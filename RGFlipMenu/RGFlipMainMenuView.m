@@ -38,7 +38,7 @@ CGRect subMenuRect(NSUInteger maxCount) {
     if (self) {
     
         _delegate = theDelegate;
-        
+
         // the mainMenuWrapperView is required so that the main Menu move animation is consistent together with the flipping transition
         _mainMenuWrapperView = [[UIView alloc] initWithFrame:mainMenuRect()];
         _mainMenuWrapperView.backgroundColor = [UIColor greenColor];  // troubleshooting only
