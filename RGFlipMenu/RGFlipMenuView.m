@@ -26,7 +26,7 @@ CGRect mainMenuRect() {
 
 @implementation RGFlipMenuView
 
-#define kRGAnimationDuration 1.4f
+#define kRGAnimationDuration 0.5f
 
 
 ////////////////////////////////////////////////////////////////////
